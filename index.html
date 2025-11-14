@@ -241,7 +241,7 @@
 </head>
 <body>
 
-  <!-- Başta src YOK, sadece data-src var -->
+  <!-- Başta src yok, sadece data-src var -->
   <audio
     id="player"
     data-src="sounds/1467471760872269.mp3"
@@ -336,7 +336,20 @@
         setTimeout(() => pwBox.classList.remove("shake"), 300);
         return;
       }
-      audio.paused ? audio.play() : audio.pause();
+
+      // Şifre girildikten sonra mikrofona basılırsa
+      // sesi DURDURMAYACAĞIZ, sadece küçük kalp efekti verelim
+      const heart = document.createElement("div");
+      heart.classList.add("heart");
+      const startX = window.innerWidth / 2;
+      const dx = (Math.random() - 0.5) * 120;
+      const dur = 1.4 + Math.random() * 0.8;
+      heart.style.left = startX + "px";
+      heart.style.setProperty("--dx", dx + "px");
+      heart.style.setProperty("--dur", dur + "s");
+      heart.innerHTML = "💗";
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), dur * 1000);
     });
   </script>
 
