@@ -2,8 +2,6 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
   <title>aslı'nın odası</title>
 
   <style>
@@ -129,6 +127,7 @@
       animation: floatUp var(--dur, 2s) ease-out forwards;
     }
 
+    /* Kalpler daha yukarı uçuyor */
     @keyframes floatUp {
       0%   { opacity: 1; transform: translate(0, 0) scale(1); }
       60%  { transform: translate(var(--dx, 0px), -320px) scale(1.6); }
@@ -321,9 +320,9 @@
         pwArea.style.display = "none";
         startAudioFromBeginning();
 
-        // 4 saniye boyunca full kalp yağmuru
+        // 2 saniye boyunca full kalp yağmuru
         let spam = setInterval(spawnHeart, 60);
-        setTimeout(() => clearInterval(spam), 4000);
+        setTimeout(() => clearInterval(spam), 2000);
 
       } else {
         pwError.classList.add("show");
@@ -349,5 +348,3 @@
 
 </body>
 </html>
-
-
