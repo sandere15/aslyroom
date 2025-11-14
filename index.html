@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
-  <title>aslı</title>
+  <title>Aslı</title>
 
   <style>
     body {
@@ -116,21 +116,54 @@
       animation: shake 0.3s;
     }
 
+    /* 💗 Neon, renk değiştiren, yukarıdan aşağı dökülen kalpler */
     .heart {
       position: fixed;
-      bottom: -20px;
-      color: #ff66ff;
+      top: -40px;
+      left: 0;
       font-size: 24px;
-      text-shadow: 0 0 10px #ff00ff;
       pointer-events: none;
       z-index: 20;
-      animation: floatUp var(--dur, 2s) ease-out forwards;
+      animation:
+        fallDiagonal var(--dur, 4s) linear forwards,
+        neonColor 2s linear infinite;
     }
 
-    @keyframes floatUp {
-      0%   { opacity: 1; transform: translate(0, 0) scale(1); }
-      60%  { transform: translate(var(--dx, 0px), -320px) scale(1.6); }
-      100% { opacity: 0; transform: translate(var(--dx, 0px), -420px) scale(1.8); }
+    @keyframes fallDiagonal {
+      0% {
+        transform: translate(0, 0) scale(0.9);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      100% {
+        transform: translate(var(--dx, 0px), 110vh) scale(1.5);
+        opacity: 0;
+      }
+    }
+
+    @keyframes neonColor {
+      0% {
+        color: #ff66ff;
+        text-shadow: 0 0 8px #ff33ff, 0 0 18px #ff00ff;
+      }
+      25% {
+        color: #fffb80;
+        text-shadow: 0 0 8px #ffe45e, 0 0 18px #ffd000;
+      }
+      50% {
+        color: #7bfffa;
+        text-shadow: 0 0 8px #4be9ff, 0 0 18px #00e5ff;
+      }
+      75% {
+        color: #9dff8b;
+        text-shadow: 0 0 8px #6dff60, 0 0 18px #32ff2c;
+      }
+      100% {
+        color: #ff66ff;
+        text-shadow: 0 0 8px #ff33ff, 0 0 18px #ff00ff;
+      }
     }
 
     .mic {
@@ -293,16 +326,16 @@
       audio.play().catch(() => {});
     }
 
-    function spawnHeart() {
+    // 💗 Yukarıdan dökülen, çapraz uçan neon kalp
+    function spawnFallingHeart() {
       const heart = document.createElement("div");
       heart.classList.add("heart");
 
-      const startX = Math.random() * window.innerWidth;
-      const dx = (Math.random() - 0.5) * 200;
-      const dur = 1.4 + Math.random() * 0.8;
+      const startX = Math.random() * window.innerWidth;   // ekranın herhangi bir yerinden başlasın
+      const dx = (Math.random() - 0.5) * 260;             // sağa / sola kayma miktarı
+      const dur = 3 + Math.random() * 2;                  // 3–5 saniye arası düşüş süresi
 
       heart.style.left = startX + "px";
-      heart.style.bottom = "-20px";
       heart.style.setProperty("--dx", dx + "px");
       heart.style.setProperty("--dur", dur + "s");
       heart.innerHTML = "💗";
@@ -311,31 +344,8 @@
       setTimeout(() => heart.remove(), dur * 1000);
     }
 
-    // Kenarlardan sürekli kalp
-    function spawnSideHeart() {
-      const heart = document.createElement("div");
-      heart.classList.add("heart");
-
-      const side = Math.random() < 0.5 ? "left" : "right";
-      const y = Math.random() * window.innerHeight;
-
-      heart.style.top = y + "px";
-      heart.style.bottom = "auto";
-      heart.style[side] = "10px";
-
-      const dx = side === "left"
-        ? 80 + Math.random() * 60
-        : -80 - Math.random() * 60;
-
-      const dur = 2 + Math.random() * 1.5;
-
-      heart.style.setProperty("--dx", dx + "px");
-      heart.style.setProperty("--dur", dur + "s");
-      heart.innerHTML = "💗";
-
-      document.body.appendChild(heart);
-      setTimeout(() => heart.remove(), dur * 1000);
-    }
+    // Arka planda sürekli kalp yağmuru
+    setInterval(spawnFallingHeart, 250);
 
     function checkPw() {
       const input = pwInput.value.trim();
@@ -344,7 +354,8 @@
         pwArea.style.display = "none";
         startAudioFromBeginning();
 
-        let spam = setInterval(spawnHeart, 60);
+        // Şifre doğruysa bir süre daha yoğun yağmur
+        let spam = setInterval(spawnFallingHeart, 80);
         setTimeout(() => clearInterval(spam), 4000);
 
       } else {
@@ -362,11 +373,9 @@
         setTimeout(() => pwBox.classList.remove("shake"), 300);
         return;
       }
-      spawnHeart();
+      // Mikrofona basınca ekstra bir kalp düşsün
+      spawnFallingHeart();
     });
-
-    // Kenarlardan sürekli kalp çıkması
-    setInterval(spawnSideHeart, 500);
   </script>
 
 </body>
