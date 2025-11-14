@@ -127,7 +127,6 @@
       animation: floatUp var(--dur, 2s) ease-out forwards;
     }
 
-    /* Kalpler daha yukarı uçuyor */
     @keyframes floatUp {
       0%   { opacity: 1; transform: translate(0, 0) scale(1); }
       60%  { transform: translate(var(--dx, 0px), -320px) scale(1.6); }
@@ -242,7 +241,6 @@
 </head>
 <body>
 
-  <!-- Başta src yok, sadece data-src var -->
   <audio
     id="player"
     data-src="sounds/1467471760872269.mp3"
@@ -282,7 +280,6 @@
       else pwInput.classList.remove("glow");
     });
 
-    // ENTER = GİR
     pwInput.addEventListener("keydown", (e) => {
       if (e.key === "Enter") checkPw();
     });
@@ -305,6 +302,33 @@
       const dur = 1.4 + Math.random() * 0.8;
 
       heart.style.left = startX + "px";
+      heart.style.bottom = "-20px";
+      heart.style.setProperty("--dx", dx + "px");
+      heart.style.setProperty("--dur", dur + "s");
+      heart.innerHTML = "💗";
+
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), dur * 1000);
+    }
+
+    // Kenarlardan sürekli kalp
+    function spawnSideHeart() {
+      const heart = document.createElement("div");
+      heart.classList.add("heart");
+
+      const side = Math.random() < 0.5 ? "left" : "right";
+      const y = Math.random() * window.innerHeight;
+
+      heart.style.top = y + "px";
+      heart.style.bottom = "auto";
+      heart.style[side] = "10px";
+
+      const dx = side === "left"
+        ? 80 + Math.random() * 60
+        : -80 - Math.random() * 60;
+
+      const dur = 2 + Math.random() * 1.5;
+
       heart.style.setProperty("--dx", dx + "px");
       heart.style.setProperty("--dur", dur + "s");
       heart.innerHTML = "💗";
@@ -320,7 +344,6 @@
         pwArea.style.display = "none";
         startAudioFromBeginning();
 
-        // 2 saniye boyunca full kalp yağmuru
         let spam = setInterval(spawnHeart, 60);
         setTimeout(() => clearInterval(spam), 4000);
 
@@ -333,21 +356,18 @@
     }
 
     mic.addEventListener("click", () => {
-      // Şifre girilmeden mikrofona basarsa sadece kutu sallasın
       if (!audio.src) {
         pwInput.focus();
         pwBox.classList.add("shake");
         setTimeout(() => pwBox.classList.remove("shake"), 300);
         return;
       }
-
-      // Şifre girildikten sonra mikrofona basarsa sadece ekstra kalp efekti
       spawnHeart();
     });
+
+    // Kenarlardan sürekli kalp çıkması
+    setInterval(spawnSideHeart, 500);
   </script>
 
 </body>
 </html>
-
-
-
