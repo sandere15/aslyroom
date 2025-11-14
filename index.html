@@ -99,7 +99,7 @@
     }
 
     @keyframes pulseGlow {
-      0%   { transform: scale(1); }
+      0%   { opacity: 1; transform: scale(1); }
       50%  { transform: scale(1.05); }
       100% { transform: scale(1); }
     }
@@ -127,10 +127,11 @@
       animation: floatUp var(--dur, 2s) ease-out forwards;
     }
 
+    /* Kalpler daha yukarı uçuyor */
     @keyframes floatUp {
-      0% { opacity: 1; transform: translate(0, 0) scale(1); }
+      0%   { opacity: 1; transform: translate(0, 0) scale(1); }
       60%  { transform: translate(var(--dx, 0px), -320px) scale(1.6); }
-      100% { transform: translate(var(--dx, 0px), -420px) scale(1.8); }
+      100% { opacity: 0; transform: translate(var(--dx, 0px), -420px) scale(1.8); }
     }
 
     .mic {
@@ -295,6 +296,23 @@
       audio.play().catch(() => {});
     }
 
+    function spawnHeart() {
+      const heart = document.createElement("div");
+      heart.classList.add("heart");
+
+      const startX = Math.random() * window.innerWidth;
+      const dx = (Math.random() - 0.5) * 200;
+      const dur = 1.4 + Math.random() * 0.8;
+
+      heart.style.left = startX + "px";
+      heart.style.setProperty("--dx", dx + "px");
+      heart.style.setProperty("--dur", dur + "s");
+      heart.innerHTML = "💗";
+
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), dur * 1000);
+    }
+
     function checkPw() {
       const input = pwInput.value.trim();
 
@@ -302,23 +320,9 @@
         pwArea.style.display = "none";
         startAudioFromBeginning();
 
-        for (let i = 0; i < 15; i++) {
-          const heart = document.createElement("div");
-          heart.classList.add("heart");
-
-          const startX = Math.random() * window.innerWidth;
-          const dx = (Math.random() - 0.5) * 200;
-          const dur = 1.6 + Math.random() * 1.2;
-
-          heart.style.left = startX + "px";
-          heart.style.setProperty("--dx", dx + "px");
-          heart.style.setProperty("--dur", dur + "s");
-
-          heart.innerHTML = "💗";
-          document.body.appendChild(heart);
-
-          setTimeout(() => heart.remove(), dur * 1000);
-        }
+        // 2 saniye boyunca full kalp yağmuru
+        let spam = setInterval(spawnHeart, 60);
+        setTimeout(() => clearInterval(spam), 4000);
 
       } else {
         pwError.classList.add("show");
@@ -337,22 +341,10 @@
         return;
       }
 
-      // Şifre girildikten sonra mikrofona basılırsa
-      // sesi DURDURMAYACAĞIZ, sadece küçük kalp efekti verelim
-      const heart = document.createElement("div");
-      heart.classList.add("heart");
-      const startX = window.innerWidth / 2;
-      const dx = (Math.random() - 0.5) * 120;
-      const dur = 1.4 + Math.random() * 0.8;
-      heart.style.left = startX + "px";
-      heart.style.setProperty("--dx", dx + "px");
-      heart.style.setProperty("--dur", dur + "s");
-      heart.innerHTML = "💗";
-      document.body.appendChild(heart);
-      setTimeout(() => heart.remove(), dur * 1000);
+      // Şifre girildikten sonra mikrofona basarsa sadece ekstra kalp efekti
+      spawnHeart();
     });
   </script>
 
 </body>
 </html>
-
