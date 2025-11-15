@@ -116,7 +116,7 @@
       animation: shake 0.3s;
     }
 
-    /* 💗 Neon, renk değiştiren, yukarıdan aşağı dökülen kalpler */
+    
     .heart {
       position: fixed;
       top: -40px;
@@ -274,7 +274,7 @@
 </head>
 <body>
 
-  <!-- ✅ ARKAPLAN MÜZİĞİ: site açılınca çalar -->
+  
   <audio
     id="bgAudio"
     src="sounds/arkaplan.mp3"
@@ -283,7 +283,7 @@
     autoplay>
   </audio>
 
-  <!-- ✅ DOĞRU ŞİFRE SONRASI ÇALACAK SES -->
+  
   <audio
     id="player"
     data-src="sounds/1467471760872269.mp3"
@@ -316,7 +316,7 @@
     const pwInput = document.getElementById('pwInput');
     const mic     = document.getElementById('mic');
 
-    // 🔐 ŞİFRE ARTIK GİZLİ (BASE64) — "sesineaşığım"
+     
     const correctHash = "c2VzaW5lYcWfxLHEn8SxbQ==";
 
     function getHash(str) {
@@ -325,7 +325,7 @@
 
     const audioSrc = audio.dataset.src;
 
-    // Autoplay engellenirse, ekrana ilk dokunuşta arka plan müziğini başlat
+    
     window.addEventListener("load", () => {
       bgAudio.play().catch(() => {});
     });
@@ -354,7 +354,7 @@
       audio.play().catch(() => {});
     }
 
-    // 💗 Yukarıdan dökülen, çapraz uçan neon kalp
+    
     function spawnFallingHeart() {
       const heart = document.createElement("div");
       heart.classList.add("heart");
@@ -372,24 +372,24 @@
       setTimeout(() => heart.remove(), dur * 1000);
     }
 
-    // Arka planda sürekli kalp yağmuru
+    
     setInterval(spawnFallingHeart, 250);
 
     function checkPw() {
       const input = pwInput.value.trim();
 
-      // 🔐 Artık düz metin değil, hash kıyaslıyoruz
+      
       if (getHash(input) === correctHash) {
         pwArea.style.display = "none";
 
-        // ✅ Doğru şifre girilince arka plan müziğini durdur
+        
         bgAudio.pause();
         bgAudio.currentTime = 0;
 
-        // ✅ ve asıl ses dosyasını çal
+        
         startAudioFromBeginning();
 
-        // Şifre doğruysa bir süre daha yoğun yağmur
+        
         let spam = setInterval(spawnFallingHeart, 80);
         setTimeout(() => clearInterval(spam), 4000);
 
@@ -408,10 +408,11 @@
         setTimeout(() => pwBox.classList.remove("shake"), 300);
         return;
       }
-      // Mikrofona basınca ekstra bir kalp düşsün
+      
       spawnFallingHeart();
     });
   </script>
 
 </body>
 </html>
+
