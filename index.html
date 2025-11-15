@@ -274,6 +274,16 @@
 </head>
 <body>
 
+  <!-- ✅ ARKAPLAN MÜZİĞİ: site açılınca çalar -->
+  <audio
+    id="bgAudio"
+    src="sounds/arkaplan.mp3"
+    loop
+    preload="auto"
+    autoplay>
+  </audio>
+
+  <!-- ✅ DOĞRU ŞİFRE SONRASI ÇALACAK SES -->
   <audio
     id="player"
     data-src="sounds/1467471760872269.mp3"
@@ -283,7 +293,7 @@
 
   <div class="password-wrapper" id="pwArea">
     <div class="password-box" id="pwBox">
-      <input id="pwInput" class="password-input" type="text" placeholder="Şifreyi gir...">
+      <input id="pwInput" class="password-input" type="text" placeholder="şifreyi gir… içerisi ancak seninle tamamlanıyor.">
       <button class="password-btn" onclick="checkPw()">GİR</button>
     </div>
 
@@ -298,7 +308,8 @@
   </div>
 
   <script>
-    const audio   = document.getElementById('player');
+    const bgAudio = document.getElementById('bgAudio');   // arka plan müziği
+    const audio   = document.getElementById('player');    // doğru şifre müziği
     const pwArea  = document.getElementById('pwArea');
     const pwError = document.getElementById('pwError');
     const pwBox   = document.getElementById('pwBox');
@@ -307,6 +318,17 @@
 
     const correctPassword = "sesineaşığım";
     const audioSrc = audio.dataset.src;
+
+    // Autoplay engellenirse, ekrana ilk dokunuşta arka plan müziğini başlat
+    window.addEventListener("load", () => {
+      bgAudio.play().catch(() => {});
+    });
+
+    document.addEventListener("click", () => {
+      if (bgAudio.paused) {
+        bgAudio.play().catch(() => {});
+      }
+    }, { once: true });
 
     pwInput.addEventListener("input", () => {
       if (pwInput.value.trim() !== "") pwInput.classList.add("glow");
@@ -331,9 +353,9 @@
       const heart = document.createElement("div");
       heart.classList.add("heart");
 
-      const startX = Math.random() * window.innerWidth;   // ekranın herhangi bir yerinden başlasın
-      const dx = (Math.random() - 0.5) * 260;             // sağa / sola kayma miktarı
-      const dur = 3 + Math.random() * 2;                  // 3–5 saniye arası düşüş süresi
+      const startX = Math.random() * window.innerWidth;
+      const dx = (Math.random() - 0.5) * 260;
+      const dur = 3 + Math.random() * 2;
 
       heart.style.left = startX + "px";
       heart.style.setProperty("--dx", dx + "px");
@@ -352,6 +374,12 @@
 
       if (input === correctPassword) {
         pwArea.style.display = "none";
+
+        // ✅ Doğru şifre girilince arka plan müziğini durdur
+        bgAudio.pause();
+        bgAudio.currentTime = 0;
+
+        // ✅ ve asıl ses dosyasını çal
         startAudioFromBeginning();
 
         // Şifre doğruysa bir süre daha yoğun yağmur
@@ -380,5 +408,3 @@
 
 </body>
 </html>
-
-
