@@ -3,6 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <title>Aslı</title>
+<script>
+  if (!window.location.search.includes('v=')) {
+    const newUrl = window.location.pathname + '?v=' + Date.now();
+    window.location.replace(newUrl);
+  }
+</script>
 
   <style>
     body {
@@ -415,5 +421,6 @@
 
 </body>
 </html>
+
 
 
