@@ -122,7 +122,7 @@
       animation: shake 0.3s;
     }
 
-    
+    /* Kalpler */
     .heart {
       position: fixed;
       top: -40px;
@@ -170,6 +170,23 @@
         color: #ff66ff;
         text-shadow: 0 0 8px #ff33ff, 0 0 18px #ff00ff;
       }
+    }
+
+    /* Kar efekti */
+    .snowflake {
+      position: fixed;
+      top: -10px;
+      color: white;
+      opacity: 0.9;
+      font-size: 12px;
+      pointer-events: none;
+      z-index: 15;
+      animation: snowFall linear forwards;
+    }
+
+    @keyframes snowFall {
+      0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
     }
 
     .mic {
@@ -278,6 +295,7 @@
     }
   </style>
 </head>
+
 <body>
 
   
@@ -286,16 +304,13 @@
     src="sounds/arkaplan.mp3"
     loop
     preload="auto"
-    autoplay>
-  </audio>
+    autoplay></audio>
 
-  
   <audio
     id="player"
     data-src="sounds/1467471760872269.mp3"
     loop
-    preload="none">
-  </audio>
+    preload="none"></audio>
 
   <div class="password-wrapper" id="pwArea">
     <div class="password-box" id="pwBox">
@@ -313,116 +328,125 @@
     <div class="mic-shadow"></div>
   </div>
 
-  <script>
-    const bgAudio = document.getElementById('bgAudio');   // arka plan müziği
-    const audio   = document.getElementById('player');    // doğru şifre müziği
-    const pwArea  = document.getElementById('pwArea');
-    const pwError = document.getElementById('pwError');
-    const pwBox   = document.getElementById('pwBox');
-    const pwInput = document.getElementById('pwInput');
-    const mic     = document.getElementById('mic');
 
-     
-    const correctHash = "c2VzaW5lYcWfxLHEn8SxbQ==";
+<script>
+  const bgAudio = document.getElementById('bgAudio');
+  const audio   = document.getElementById('player');
+  const pwArea  = document.getElementById('pwArea');
+  const pwError = document.getElementById('pwError');
+  const pwBox   = document.getElementById('pwBox');
+  const pwInput = document.getElementById('pwInput');
+  const mic     = document.getElementById('mic');
 
-    function getHash(str) {
-      return btoa(unescape(encodeURIComponent(str)));
-    }
+  const correctHash = "c2VzaW5lYcWfxLHEn8SxbQ==";
 
-    const audioSrc = audio.dataset.src;
+  function getHash(str) {
+    return btoa(unescape(encodeURIComponent(str)));
+  }
 
-    
-    window.addEventListener("load", () => {
+  const audioSrc = audio.dataset.src;
+
+  window.addEventListener("load", () => {
+    bgAudio.play().catch(() => {});
+  });
+
+  document.addEventListener("click", () => {
+    if (bgAudio.paused) {
       bgAudio.play().catch(() => {});
-    });
+    }
+  }, { once: true });
 
-    document.addEventListener("click", () => {
-      if (bgAudio.paused) {
-        bgAudio.play().catch(() => {});
-      }
-    }, { once: true });
+  pwInput.addEventListener("input", () => {
+    if (pwInput.value.trim() !== "") pwInput.classList.add("glow");
+    else pwInput.classList.remove("glow");
+  });
 
-    pwInput.addEventListener("input", () => {
-      if (pwInput.value.trim() !== "") pwInput.classList.add("glow");
-      else pwInput.classList.remove("glow");
-    });
+  pwInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") checkPw();
+  });
 
-    pwInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") checkPw();
-    });
+  function startAudioFromBeginning() {
+    if (!audio.src) {
+      audio.src = audioSrc;
+    }
+    audio.pause();
+    audio.currentTime = 0;
+    audio.play().catch(() => {});
+  }
 
-    function startAudioFromBeginning() {
-      if (!audio.src) {
-        audio.src = audioSrc;
-      }
-      audio.pause();
-      audio.currentTime = 0;
-      audio.play().catch(() => {});
+  /* Kalp üretme */
+  function spawnFallingHeart() {
+    const heart = document.createElement("div");
+    heart.classList.add("heart");
+
+    const startX = Math.random() * window.innerWidth;
+    const dx = (Math.random() - 0.5) * 260;
+    const dur = 3 + Math.random() * 2;
+
+    heart.style.left = startX + "px";
+    heart.style.setProperty("--dx", dx + "px");
+    heart.style.setProperty("--dur", dur + "s");
+    heart.innerHTML = "💗";
+
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), dur * 1000);
+  }
+
+  setInterval(spawnFallingHeart, 250);
+
+  /* KAR ÜRETME */
+  function spawnSnow() {
+    const snow = document.createElement("div");
+    snow.classList.add("snowflake");
+    snow.innerHTML = "❄";
+
+    const startX = Math.random() * window.innerWidth;
+    const size = 8 + Math.random() * 10;
+    const duration = 3 + Math.random() * 4;
+
+    snow.style.left = startX + "px";
+    snow.style.fontSize = size + "px";
+    snow.style.animationDuration = duration + "s";
+
+    document.body.appendChild(snow);
+    setTimeout(() => snow.remove(), duration * 1000);
+  }
+
+  setInterval(spawnSnow, 120);
+
+  function checkPw() {
+    const input = pwInput.value.trim();
+
+    if (getHash(input) === correctHash) {
+      pwArea.style.display = "none";
+
+      bgAudio.pause();
+      bgAudio.currentTime = 0;
+
+      startAudioFromBeginning();
+
+      let spam = setInterval(spawnFallingHeart, 80);
+      setTimeout(() => clearInterval(spam), 4000);
+
+    } else {
+      pwError.classList.add("show");
+      pwError.classList.add("pulse");
+      pwBox.classList.add("shake");
+      setTimeout(() => pwBox.classList.remove("shake"), 300);
+    }
+  }
+
+  mic.addEventListener("click", () => {
+    if (!audio.src) {
+      pwInput.focus();
+      pwBox.classList.add("shake");
+      setTimeout(() => pwBox.classList.remove("shake"), 300);
+      return;
     }
 
-    
-    function spawnFallingHeart() {
-      const heart = document.createElement("div");
-      heart.classList.add("heart");
-
-      const startX = Math.random() * window.innerWidth;
-      const dx = (Math.random() - 0.5) * 260;
-      const dur = 3 + Math.random() * 2;
-
-      heart.style.left = startX + "px";
-      heart.style.setProperty("--dx", dx + "px");
-      heart.style.setProperty("--dur", dur + "s");
-      heart.innerHTML = "💗";
-
-      document.body.appendChild(heart);
-      setTimeout(() => heart.remove(), dur * 1000);
-    }
-
-    
-    setInterval(spawnFallingHeart, 250);
-
-    function checkPw() {
-      const input = pwInput.value.trim();
-
-      
-      if (getHash(input) === correctHash) {
-        pwArea.style.display = "none";
-
-        
-        bgAudio.pause();
-        bgAudio.currentTime = 0;
-
-        
-        startAudioFromBeginning();
-
-        
-        let spam = setInterval(spawnFallingHeart, 80);
-        setTimeout(() => clearInterval(spam), 4000);
-
-      } else {
-        pwError.classList.add("show");
-        pwError.classList.add("pulse");
-        pwBox.classList.add("shake");
-        setTimeout(() => pwBox.classList.remove("shake"), 300);
-      }
-    }
-
-    mic.addEventListener("click", () => {
-      if (!audio.src) {
-        pwInput.focus();
-        pwBox.classList.add("shake");
-        setTimeout(() => pwBox.classList.remove("shake"), 300);
-        return;
-      }
-      
-      spawnFallingHeart();
-    });
-  </script>
+    spawnFallingHeart();
+  });
+</script>
 
 </body>
 </html>
-
-
-
-
-
