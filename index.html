@@ -101,7 +101,7 @@
     @keyframes pulseGlow {
       0%   { opacity: 1; transform: scale(1); }
       50%  { transform: scale(1.05); }
-      100% { transform: scale(1); }
+      100% { opacity: 1; transform: scale(1); }
     }
 
     @keyframes shake {
@@ -316,7 +316,13 @@
     const pwInput = document.getElementById('pwInput');
     const mic     = document.getElementById('mic');
 
-    const correctPassword = "sesineaşığım";
+    // 🔐 ŞİFRE ARTIK GİZLİ (BASE64) — "sesineaşığım"
+    const correctHash = "c2VzaW5lYcWfxLHEn8SxbQ==";
+
+    function getHash(str) {
+      return btoa(unescape(encodeURIComponent(str)));
+    }
+
     const audioSrc = audio.dataset.src;
 
     // Autoplay engellenirse, ekrana ilk dokunuşta arka plan müziğini başlat
@@ -372,7 +378,8 @@
     function checkPw() {
       const input = pwInput.value.trim();
 
-      if (input === correctPassword) {
+      // 🔐 Artık düz metin değil, hash kıyaslıyoruz
+      if (getHash(input) === correctHash) {
         pwArea.style.display = "none";
 
         // ✅ Doğru şifre girilince arka plan müziğini durdur
