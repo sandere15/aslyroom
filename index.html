@@ -123,7 +123,7 @@
       animation: shake 0.3s;
     }
 
-    
+    /* Kalpler */
     .heart {
       position: fixed;
       top: -40px;
@@ -158,7 +158,7 @@
       100% { color: #ff66ff; }
     }
 
-    
+    /* Kar + kalp kar mix */
     .snowflake {
       position: fixed;
       top: -10px;
@@ -175,7 +175,6 @@
       100% { transform: translateY(120vh) rotate(360deg); opacity: 0; }
     }
 
-    
     .mic {
       position: absolute;
       top: 50%;
@@ -284,7 +283,8 @@
   const pwInput = document.getElementById('pwInput');
   const mic     = document.getElementById('mic');
 
-  const pwdArr = [43, 376, 42, 376, 59, 376, 36, 58, 44, 58, 32, 39, 44, 105, 105, 8, 278, 376, 342, 376, 36];
+  // yeni şifre: "sesineaşığım"
+  const pwdArr = [58, 44, 58, 32, 39, 44, 40, 278, 376, 342, 376, 36];
   const salt   = 73;
 
   function isCorrect(input) {
@@ -323,22 +323,22 @@
     audio.play().catch(() => {});
   }
 
-  
+  // kalpler
   function spawnFallingHeart() {
     const count = 1; 
     const heartTypes = [
-  "💗", "💖", "💝",   
-  "❤️", "♥️", "❤️‍🔥", "🤍"   
-];
+      "💗", "💖", "💝",
+      "❤️", "♥️", "❤️‍🔥", "🤍"
+    ];
 
     for (let i = 0; i < count; i++) {
       const heart = document.createElement("div");
       heart.classList.add("heart");
 
       const startX = Math.random() * window.innerWidth;
-      const dx = (Math.random() - 0.5) * 180; // daha az kayma
-      const dur = 5.5 + Math.random() * 1.5; // 5.5–7 saniye
-      const size = 18 + Math.random() * 6;   // 18–24 px
+      const dx = (Math.random() - 0.5) * 180;
+      const dur = 5.5 + Math.random() * 1.5;
+      const size = 18 + Math.random() * 6;
 
       heart.style.left = startX + "px";
       heart.style.setProperty("--dx", dx + "px");
@@ -351,21 +351,21 @@
     }
   }
 
-  
   setInterval(spawnFallingHeart, 350);
 
-  
+  // kar + kalp kar mix
   function spawnSnow() {
-    const count = 1; // 
+    const count = 1;
     for (let i = 0; i < count; i++) {
       const snow = document.createElement("div");
       snow.classList.add("snowflake");
-      const snowTypes = ["❄", "♡"];
-snow.innerHTML = snowTypes[Math.floor(Math.random() * snowTypes.length)];
+
+      const snowTypes = ["❄", "✦", "♡", "ღ"];
+      snow.innerHTML = snowTypes[Math.floor(Math.random() * snowTypes.length)];
 
       const startX = Math.random() * window.innerWidth;
-      const size = 10 + Math.random() * 20;   // küçük ve hafif
-      const duration = 6 + Math.random() * 2; // 6–8 saniye
+      const size = 10 + Math.random() * 20;   // 10–30 px
+      const duration = 6 + Math.random() * 2; // 6–8 sn
 
       snow.style.left = startX + "px";
       snow.style.fontSize = size + "px";
@@ -377,7 +377,6 @@ snow.innerHTML = snowTypes[Math.floor(Math.random() * snowTypes.length)];
     }
   }
 
-  
   setInterval(spawnSnow, 280);
 
   function checkPw() {
@@ -414,10 +413,4 @@ snow.innerHTML = snowTypes[Math.floor(Math.random() * snowTypes.length)];
 </script>
 
 </body>
-  </html>
-
-
-
-
-
-
+</html>
