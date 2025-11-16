@@ -299,7 +299,6 @@
 
 <body>
 
-  
   <audio
     id="bgAudio"
     src="sounds/arkaplan.mp3"
@@ -320,7 +319,7 @@
     </div>
 
     <div id="pwError" class="pw-error">
-      şifre yanlış ama sen çok güzelsin, bulabilirsin inanıyorum..
+      yanlış yazdın ama senin güzelliğin doğruyu bulacak kadar parlak… bir daha dene kuzum.
     </div>
   </div>
 
@@ -328,7 +327,6 @@
     <i class="mic-icon"></i>
     <div class="mic-shadow"></div>
   </div>
-
 
 <script>
   const bgAudio = document.getElementById('bgAudio');
@@ -339,10 +337,18 @@
   const pwInput = document.getElementById('pwInput');
   const mic     = document.getElementById('mic');
 
-  const correctHash = "c2VzaW5lYcWfxLHEn8SxbQ==";
+  
+  const pwdArr = [43, 376, 42, 376, 59, 376, 36, 58, 44, 58, 32, 39, 44, 105, 105, 8, 278, 376, 342, 376, 36];
+  const salt   = 73;
 
-  function getHash(str) {
-    return btoa(unescape(encodeURIComponent(str)));
+  function isCorrect(input) {
+    if (input.length !== pwdArr.length) return false;
+    for (let i = 0; i < pwdArr.length; i++) {
+      if ((input.charCodeAt(i) ^ salt) !== pwdArr[i]) {
+        return false;
+      }
+    }
+    return true;
   }
 
   const audioSrc = audio.dataset.src;
@@ -375,7 +381,7 @@
     audio.play().catch(() => {});
   }
 
-  /* Kalp üretme */
+  
   function spawnFallingHeart() {
     const heart = document.createElement("div");
     heart.classList.add("heart");
@@ -395,7 +401,7 @@
 
   setInterval(spawnFallingHeart, 250);
 
-  /* KAR ÜRETME */
+  
   function spawnSnow() {
     const snow = document.createElement("div");
     snow.classList.add("snowflake");
@@ -418,7 +424,7 @@
   function checkPw() {
     const input = pwInput.value.trim();
 
-    if (getHash(input) === correctHash) {
+    if (isCorrect(input)) {
       pwArea.style.display = "none";
 
       bgAudio.pause();
