@@ -128,11 +128,11 @@
       position: fixed;
       top: -40px;
       left: 0;
-      font-size: 26px;
+      font-size: 24px;
       pointer-events: none;
       z-index: 20;
       animation:
-        fallDiagonal var(--dur, 4.5s) linear forwards,
+        fallDiagonal var(--dur, 4.2s) linear forwards,
         neonColor 2s linear infinite;
     }
 
@@ -145,7 +145,7 @@
         opacity: 1;
       }
       100% {
-        transform: translate(var(--dx, 0px), 110vh) scale(1.5);
+        transform: translate(var(--dx, 0px), 110vh) scale(1.4);
         opacity: 0;
       }
     }
@@ -173,7 +173,7 @@
       }
     }
 
-    
+    /* Kar efekti */
     .snowflake {
       position: fixed;
       top: -10px;
@@ -381,9 +381,9 @@
     audio.play().catch(() => {});
   }
 
-  
+  // Biraz daha sakin kalp üretimi
   function spawnFallingHeart() {
-    const count = 2 + Math.floor(Math.random() * 2); 
+    const count = 1 + Math.floor(Math.random() * 2); // 
     const heartTypes = ["💗", "💖", "💞", "💕"];
 
     for (let i = 0; i < count; i++) {
@@ -391,9 +391,9 @@
       heart.classList.add("heart");
 
       const startX = Math.random() * window.innerWidth;
-      const dx = (Math.random() - 0.5) * 320;        
-      const dur = 3.5 + Math.random() * 2.5;         
-      const size = 22 + Math.random() * 10;          
+      const dx = (Math.random() - 0.5) * 260;         
+      const dur = 3.5 + Math.random() * 2;            
+      const size = 20 + Math.random() * 8;            
 
       heart.style.left = startX + "px";
       heart.style.setProperty("--dx", dx + "px");
@@ -407,19 +407,19 @@
   }
 
   
-  setInterval(spawnFallingHeart, 160);
+  setInterval(spawnFallingHeart, 230);
 
   
   function spawnSnow() {
-    const count = 2 + Math.floor(Math.random() * 2); 
+    const count = 1 + Math.floor(Math.random() * 2); 
     for (let i = 0; i < count; i++) {
       const snow = document.createElement("div");
       snow.classList.add("snowflake");
       snow.innerHTML = "❄";
 
       const startX = Math.random() * window.innerWidth;
-      const size = 10 + Math.random() * 12;          
-      const duration = 4 + Math.random() * 4;        
+      const size = 9 + Math.random() * 10;            // 9–19 px
+      const duration = 4 + Math.random() * 3;         // 4–7 sn
 
       snow.style.left = startX + "px";
       snow.style.fontSize = size + "px";
@@ -432,7 +432,7 @@
   }
 
   
-  setInterval(spawnSnow, 90);
+  setInterval(spawnSnow, 140);
 
   function checkPw() {
     const input = pwInput.value.trim();
@@ -470,4 +470,3 @@
 
 </body>
 </html>
-
