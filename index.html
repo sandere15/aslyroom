@@ -123,16 +123,16 @@
       animation: shake 0.3s;
     }
 
-    
+    /* Kalpler (güçlendirilmiş) */
     .heart {
       position: fixed;
       top: -40px;
       left: 0;
-      font-size: 24px;
+      font-size: 26px;
       pointer-events: none;
       z-index: 20;
       animation:
-        fallDiagonal var(--dur, 4s) linear forwards,
+        fallDiagonal var(--dur, 4.5s) linear forwards,
         neonColor 2s linear infinite;
     }
 
@@ -173,7 +173,7 @@
       }
     }
 
-    
+    /* Kar efekti */
     .snowflake {
       position: fixed;
       top: -10px;
@@ -337,7 +337,7 @@
   const pwInput = document.getElementById('pwInput');
   const mic     = document.getElementById('mic');
 
-  
+  // XOR ile saklanan şifre ("bıcırımsesine  Aşığım")
   const pwdArr = [43, 376, 42, 376, 59, 376, 36, 58, 44, 58, 32, 39, 44, 105, 105, 8, 278, 376, 342, 376, 36];
   const salt   = 73;
 
@@ -381,45 +381,58 @@
     audio.play().catch(() => {});
   }
 
-  
+  // Güçlendirilmiş kalp üretme
   function spawnFallingHeart() {
-    const heart = document.createElement("div");
-    heart.classList.add("heart");
+    const count = 2 + Math.floor(Math.random() * 2); // 2–3 kalp
+    const heartTypes = ["💗", "💖", "💞", "💕"];
 
-    const startX = Math.random() * window.innerWidth;
-    const dx = (Math.random() - 0.5) * 260;
-    const dur = 3 + Math.random() * 2;
+    for (let i = 0; i < count; i++) {
+      const heart = document.createElement("div");
+      heart.classList.add("heart");
 
-    heart.style.left = startX + "px";
-    heart.style.setProperty("--dx", dx + "px");
-    heart.style.setProperty("--dur", dur + "s");
-    heart.innerHTML = "💗";
+      const startX = Math.random() * window.innerWidth;
+      const dx = (Math.random() - 0.5) * 320;        // daha geniş yana kayma
+      const dur = 3.5 + Math.random() * 2.5;         // 3.5–6 saniye
+      const size = 22 + Math.random() * 10;          // 22–32 px
 
-    document.body.appendChild(heart);
-    setTimeout(() => heart.remove(), dur * 1000);
+      heart.style.left = startX + "px";
+      heart.style.setProperty("--dx", dx + "px");
+      heart.style.setProperty("--dur", dur + "s");
+      heart.style.fontSize = size + "px";
+      heart.innerHTML = heartTypes[Math.floor(Math.random() * heartTypes.length)];
+
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), dur * 1000);
+    }
   }
 
-  setInterval(spawnFallingHeart, 250);
+  // Daha sık kalp
+  setInterval(spawnFallingHeart, 160);
 
-  
+  // Güçlendirilmiş kar üretme
   function spawnSnow() {
-    const snow = document.createElement("div");
-    snow.classList.add("snowflake");
-    snow.innerHTML = "❄";
+    const count = 2 + Math.floor(Math.random() * 2); // 2–3 kar tanesi
+    for (let i = 0; i < count; i++) {
+      const snow = document.createElement("div");
+      snow.classList.add("snowflake");
+      snow.innerHTML = "❄";
 
-    const startX = Math.random() * window.innerWidth;
-    const size = 8 + Math.random() * 10;
-    const duration = 3 + Math.random() * 4;
+      const startX = Math.random() * window.innerWidth;
+      const size = 10 + Math.random() * 12;          // 10–22 px
+      const duration = 4 + Math.random() * 4;        // 4–8 saniye
 
-    snow.style.left = startX + "px";
-    snow.style.fontSize = size + "px";
-    snow.style.animationDuration = duration + "s";
+      snow.style.left = startX + "px";
+      snow.style.fontSize = size + "px";
+      snow.style.animationDuration = duration + "s";
+      snow.style.opacity = 0.7 + Math.random() * 0.3;
 
-    document.body.appendChild(snow);
-    setTimeout(() => snow.remove(), duration * 1000);
+      document.body.appendChild(snow);
+      setTimeout(() => snow.remove(), duration * 1000);
+    }
   }
 
-  setInterval(spawnSnow, 120);
+  // Daha sık kar
+  setInterval(spawnSnow, 90);
 
   function checkPw() {
     const input = pwInput.value.trim();
@@ -457,4 +470,3 @@
 
 </body>
 </html>
-
