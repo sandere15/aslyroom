@@ -360,10 +360,11 @@
     for (let i = 0; i < count; i++) {
       const snow = document.createElement("div");
       snow.classList.add("snowflake");
-      snow.innerHTML = "❄";
+      const snowTypes = ["❄", "✦", "♡", "ღ"];
+snow.innerHTML = snowTypes[Math.floor(Math.random() * snowTypes.length)];
 
       const startX = Math.random() * window.innerWidth;
-      const size = 8 + Math.random() * 6;   // küçük ve hafif
+      const size = 11 + Math.random() * 7;   // küçük ve hafif
       const duration = 6 + Math.random() * 2; // 6–8 saniye
 
       snow.style.left = startX + "px";
@@ -414,4 +415,5 @@
 
 </body>
   </html>
+
 
