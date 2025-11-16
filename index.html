@@ -128,49 +128,34 @@
       position: fixed;
       top: -40px;
       left: 0;
-      font-size: 24px;
+      font-size: 20px;
       pointer-events: none;
       z-index: 20;
+      opacity: 0.9;
       animation:
-        fallDiagonal var(--dur, 4.2s) linear forwards,
+        fallDiagonal var(--dur, 6s) linear forwards,
         neonColor 2s linear infinite;
     }
 
     @keyframes fallDiagonal {
       0% {
-        transform: translate(0, 0) scale(0.9);
+        transform: translate(0, 0) scale(0.8);
         opacity: 0;
       }
-      10% {
+      20% {
         opacity: 1;
       }
       100% {
-        transform: translate(var(--dx, 0px), 110vh) scale(1.4);
+        transform: translate(var(--dx, 0px), 120vh) scale(1.2);
         opacity: 0;
       }
     }
 
     @keyframes neonColor {
-      0% {
-        color: #ff66ff;
-        text-shadow: 0 0 8px #ff33ff, 0 0 18px #ff00ff;
-      }
-      25% {
-        color: #fffb80;
-        text-shadow: 0 0 8px #ffe45e, 0 0 18px #ffd000;
-      }
-      50% {
-        color: #7bfffa;
-        text-shadow: 0 0 8px #4be9ff, 0 0 18px #00e5ff;
-      }
-      75% {
-        color: #9dff8b;
-        text-shadow: 0 0 8px #6dff60, 0 0 18px #32ff2c;
-      }
-      100% {
-        color: #ff66ff;
-        text-shadow: 0 0 8px #ff33ff, 0 0 18px #ff00ff;
-      }
+      0% { color: #ff66ff; }
+      33% { color: #ffd7ff; }
+      66% { color: #ffc4f8; }
+      100% { color: #ff66ff; }
     }
 
     
@@ -178,8 +163,8 @@
       position: fixed;
       top: -10px;
       color: white;
-      opacity: 0.9;
-      font-size: 12px;
+      opacity: 0.8;
+      font-size: 10px;
       pointer-events: none;
       z-index: 15;
       animation: snowFall linear forwards;
@@ -187,9 +172,10 @@
 
     @keyframes snowFall {
       0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
-      100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+      100% { transform: translateY(120vh) rotate(360deg); opacity: 0; }
     }
 
+    
     .mic {
       position: absolute;
       top: 50%;
@@ -265,61 +251,22 @@
       border-radius: 4px;
       transform: translate(-50%, 0);
     }
-
-    .mic-shadow {
-      width: 400px;
-      height: 400px;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      border-radius: 100%;
-      z-index: 1;
-      box-shadow:
-        10px -55px 30px 15px #823ca6,
-        24px -10px 47px 10px #aab3d2,
-        21px 25px 97px 10px #5acee3,
-        51px 5px 17px 10px #1b7d8f,
-        3px 2px 77px 10px #f30bf5;
-      transform: translate(-50%, -50%);
-      transform-origin: 0% 0%;
-      animation: shadow-rotate 1.5s linear infinite;
-    }
-
-    @keyframes circle-size {
-      from { width: 250px; height: 250px; }
-      to   { width: 300px; height: 300px; }
-    }
-
-    @keyframes shadow-rotate {
-      from { rotate: 0deg; }
-      to   { rotate: 360deg; }
-    }
   </style>
 </head>
 
 <body>
 
-  <audio
-    id="bgAudio"
-    src="sounds/arkaplan.mp3"
-    loop
-    preload="auto"
-    autoplay></audio>
-
-  <audio
-    id="player"
-    data-src="sounds/1467471760872269.mp3"
-    loop
-    preload="none"></audio>
+  <audio id="bgAudio" src="sounds/arkaplan.mp3" loop preload="auto" autoplay></audio>
+  <audio id="player" data-src="sounds/1467471760872269.mp3" loop preload="none"></audio>
 
   <div class="password-wrapper" id="pwArea">
     <div class="password-box" id="pwBox">
-      <input id="pwInput" class="password-input" type="text" placeholder="yaz bakalım güzelim… içerisi sen olmadan yarım kalıyor.">
+      <input id="pwInput" class="password-input" type="text" placeholder="yaz bakalım güzelim... içerisi sen olmadan yarım kalıyor.">
       <button class="password-btn" onclick="checkPw()">GİR</button>
     </div>
 
     <div id="pwError" class="pw-error">
-      yanlış yazdın ama senin o tatlı halinle doğruyu bulman an meselesi… bir tane daha dene kuzum.
+      yanlış yazdın ama senin o tatlı halinle doğruyu bulman an meselesi... bir tane daha ne kuzum. 
     </div>
   </div>
 
@@ -337,16 +284,13 @@
   const pwInput = document.getElementById('pwInput');
   const mic     = document.getElementById('mic');
 
-  
   const pwdArr = [43, 376, 42, 376, 59, 376, 36, 58, 44, 58, 32, 39, 44, 105, 105, 8, 278, 376, 342, 376, 36];
   const salt   = 73;
 
   function isCorrect(input) {
     if (input.length !== pwdArr.length) return false;
     for (let i = 0; i < pwdArr.length; i++) {
-      if ((input.charCodeAt(i) ^ salt) !== pwdArr[i]) {
-        return false;
-      }
+      if ((input.charCodeAt(i) ^ salt) !== pwdArr[i]) return false;
     }
     return true;
   }
@@ -364,8 +308,7 @@
   }, { once: true });
 
   pwInput.addEventListener("input", () => {
-    if (pwInput.value.trim() !== "") pwInput.classList.add("glow");
-    else pwInput.classList.remove("glow");
+    pwInput.classList.toggle("glow", pwInput.value.trim() !== "");
   });
 
   pwInput.addEventListener("keydown", (e) => {
@@ -373,9 +316,8 @@
   });
 
   function startAudioFromBeginning() {
-    if (!audio.src) {
-      audio.src = audioSrc;
-    }
+    if (!audio.src) audio.src = audioSrc;
+
     audio.pause();
     audio.currentTime = 0;
     audio.play().catch(() => {});
@@ -383,17 +325,17 @@
 
   
   function spawnFallingHeart() {
-    const count = 1 + Math.floor(Math.random() * 2); // 
-    const heartTypes = ["💗", "💖", "💞", "💕"];
+    const count = 1; 
+    const heartTypes = ["💗", "💖", "💕"];
 
     for (let i = 0; i < count; i++) {
       const heart = document.createElement("div");
       heart.classList.add("heart");
 
       const startX = Math.random() * window.innerWidth;
-      const dx = (Math.random() - 0.5) * 260;         
-      const dur = 3.5 + Math.random() * 2;            
-      const size = 20 + Math.random() * 8;            
+      const dx = (Math.random() - 0.5) * 180; // daha az kayma
+      const dur = 5.5 + Math.random() * 1.5; // 5.5–7 saniye
+      const size = 18 + Math.random() * 6;   // 18–24 px
 
       heart.style.left = startX + "px";
       heart.style.setProperty("--dx", dx + "px");
@@ -407,24 +349,24 @@
   }
 
   
-  setInterval(spawnFallingHeart, 230);
+  setInterval(spawnFallingHeart, 350);
 
   
   function spawnSnow() {
-    const count = 1 + Math.floor(Math.random() * 2); 
+    const count = 1; // tek tek yumuşak
     for (let i = 0; i < count; i++) {
       const snow = document.createElement("div");
       snow.classList.add("snowflake");
       snow.innerHTML = "❄";
 
       const startX = Math.random() * window.innerWidth;
-      const size = 9 + Math.random() * 10;            // 9–19 px
-      const duration = 4 + Math.random() * 3;         // 4–7 sn
+      const size = 8 + Math.random() * 6;   // küçük ve hafif
+      const duration = 6 + Math.random() * 2; // 6–8 saniye
 
       snow.style.left = startX + "px";
       snow.style.fontSize = size + "px";
       snow.style.animationDuration = duration + "s";
-      snow.style.opacity = 0.7 + Math.random() * 0.3;
+      snow.style.opacity = 0.6 + Math.random() * 0.2;
 
       document.body.appendChild(snow);
       setTimeout(() => snow.remove(), duration * 1000);
@@ -432,7 +374,7 @@
   }
 
   
-  setInterval(spawnSnow, 140);
+  setInterval(spawnSnow, 280);
 
   function checkPw() {
     const input = pwInput.value.trim();
@@ -445,8 +387,8 @@
 
       startAudioFromBeginning();
 
-      let spam = setInterval(spawnFallingHeart, 80);
-      setTimeout(() => clearInterval(spam), 4000);
+      let spam = setInterval(spawnFallingHeart, 120);
+      setTimeout(() => clearInterval(spam), 3500);
 
     } else {
       pwError.classList.add("show");
@@ -463,13 +405,9 @@
       setTimeout(() => pwBox.classList.remove("shake"), 300);
       return;
     }
-
     spawnFallingHeart();
   });
 </script>
 
 </body>
-</html>
-
-
-
+  </html>
