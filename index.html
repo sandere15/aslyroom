@@ -11,18 +11,25 @@
         opacity 0.4s ease-in-out, color 0.4s ease-in-out, background 0.4s ease-in-out,
         text-shadow 0.4s ease-in-out;
     }
+    *::before,
+    *::after {
+      transition: filter 0.4s ease-in-out, box-shadow 0.4s ease-in-out,
+        opacity 0.4s ease-in-out, color 0.4s ease-in-out, background 0.4s ease-in-out,
+        text-shadow 0.4s ease-in-out;
+    }
 
-    html, body {
+    html,
+    body {
       height: 100%;
       overflow: hidden;
       margin: 0;
+      background: #000;
     }
 
     body {
       display: flex;
       justify-content: center;
       align-items: center;
-      background: #000;
       font-size: calc(var(--_size) * 0.01);
       --_size: min(min(600px, 50vh), 50vw);
       --base-clr: #b7b5b4;
@@ -44,9 +51,11 @@
       100% { rotate: calc(1deg * var(--degofrot)); }
     }
 
-    .bell-container, .bell-container * {
+    .bell-container,
+    .bell-container * {
       position: absolute;
-      left: 0; right: 0; top: 0; bottom: 0;
+      left: 0; right: 0;
+      top: 0; bottom: 0;
       margin: auto;
     }
 
@@ -64,7 +73,8 @@
       border-radius: 50%;
       translate: 0 -28em;
       background: var(--base-clr);
-      box-shadow: inset -1em -0.5em 2em 0.5em #fff, inset 1em -1em 2em 3em #000,
+      box-shadow: inset -1em -0.5em 2em 0.5em #fff,
+        inset 1em -1em 2em 3em #000,
         0 -0.1em 0.4em 0.3em #c6eaffa8;
     }
 
@@ -77,35 +87,24 @@
       box-shadow: 0 -0.1em 0.4em 0.2em #c6eaffa8;
     }
 
-    .shadow-l1 {
-      width: 30em;
-      height: 42em;
-      border-radius: 50%;
-      rotate: 12deg;
-      translate: -3em -6em;
-      filter: blur(2em);
-      background: #797a80;
+    .bell-base:nth-child(2) {
+      filter: brightness(3) blur(1em);
+      scale: 0.74 0.84;
+      translate: 0em -11em;
     }
 
-    .shadow-l2 {
-      width: 130%;
-      height: 90%;
-      filter: blur(5em);
-      translate: -6em 9em;
+    .glow {
+      width: 100%;
+      height: 100%;
+      filter: brightness(2) blur(2em);
     }
-
-    .glow { width: 100%; height: 100%; filter: brightness(2) blur(2em); }
-    .glow2 { width: 100%; height: 100%; opacity: 0.1; filter: brightness(1) blur(0.3em); }
 
     .grain {
       z-index: 10;
       position: absolute;
-      pointer-events: none; /* EN ÖNEMLİSİ */
+      pointer-events: none;
       width: 100%;
       height: 100%;
-      top: 0;
-      bottom: 0;
-      margin: auto;
       background: radial-gradient(circle at 50% 50%, #000, #0000),
         url("data:image/svg+xml,%3Csvg viewBox='0 0 600 600' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='2' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
       filter: contrast(100%) brightness(200%) grayscale(1) opacity(0.168);
@@ -114,10 +113,11 @@
   </style>
 </head>
 
-<body>
+<!-- 🔥 TIKLANINCA MÜZİK BAŞLASIN -->
+<body onclick="document.getElementById('bgAudio').play()">
 
-  <!-- 🔊 ARKA PLAN MÜZİĞİ -->
-  <audio id="bgAudio" src="sounds/arkas.mp3" preload="auto" loop></audio>
+  <!-- 🔊 SES DOSYASI (sounds/arkas.mp3) -->
+  <audio id="bgAudio" src="sounds/arkas.mp3" preload="auto"></audio>
 
   <div class="bell-container">
     <div class="rope"></div>
@@ -126,23 +126,9 @@
     <div class="bell-base"></div>
     <div class="bell-base"></div>
 
-    <div class="shadow-l1"></div>
-    <div class="shadow-l2"></div>
-
     <div class="glow"></div>
-    <div class="glow2"></div>
   </div>
 
   <div class="grain"></div>
-
-<script>
-  const bgAudio = document.getElementById("bgAudio");
-
-  // 🔥 İlk tıklamada müzik başlasın
-  document.addEventListener("click", () => {
-    bgAudio.play().catch(() => {});
-  }, { once: true });
-</script>
-
 </body>
 </html>
