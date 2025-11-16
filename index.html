@@ -328,7 +328,7 @@
     const count = 1; 
     const heartTypes = [
   "💗", "💖", "💕",   
-  "❤️", "♥️", "❤️‍🔥", "💝"   
+  "❤️", "♥️", "❤️‍🔥", "💞"   
 ];
 
     for (let i = 0; i < count; i++) {
@@ -356,11 +356,11 @@
 
   
   function spawnSnow() {
-    const count = 1; // tek tek yumuşak
+    const count = 1; // 
     for (let i = 0; i < count; i++) {
       const snow = document.createElement("div");
       snow.classList.add("snowflake");
-      const snowTypes = ["❄", "✦", "♡", "ღ"];
+      const snowTypes = ["❄", "♡"];
 snow.innerHTML = snowTypes[Math.floor(Math.random() * snowTypes.length)];
 
       const startX = Math.random() * window.innerWidth;
@@ -415,6 +415,7 @@ snow.innerHTML = snowTypes[Math.floor(Math.random() * snowTypes.length)];
 
 </body>
   </html>
+
 
 
 
