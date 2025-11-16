@@ -123,7 +123,7 @@
       animation: shake 0.3s;
     }
 
-    /* Kalpler (güçlendirilmiş) */
+    
     .heart {
       position: fixed;
       top: -40px;
@@ -173,7 +173,7 @@
       }
     }
 
-    /* Kar efekti */
+    
     .snowflake {
       position: fixed;
       top: -10px;
@@ -337,7 +337,7 @@
   const pwInput = document.getElementById('pwInput');
   const mic     = document.getElementById('mic');
 
-  // XOR ile saklanan şifre ("bıcırımsesine  Aşığım")
+  
   const pwdArr = [43, 376, 42, 376, 59, 376, 36, 58, 44, 58, 32, 39, 44, 105, 105, 8, 278, 376, 342, 376, 36];
   const salt   = 73;
 
@@ -381,9 +381,9 @@
     audio.play().catch(() => {});
   }
 
-  // Güçlendirilmiş kalp üretme
+  
   function spawnFallingHeart() {
-    const count = 2 + Math.floor(Math.random() * 2); // 2–3 kalp
+    const count = 2 + Math.floor(Math.random() * 2); 
     const heartTypes = ["💗", "💖", "💞", "💕"];
 
     for (let i = 0; i < count; i++) {
@@ -391,9 +391,9 @@
       heart.classList.add("heart");
 
       const startX = Math.random() * window.innerWidth;
-      const dx = (Math.random() - 0.5) * 320;        // daha geniş yana kayma
-      const dur = 3.5 + Math.random() * 2.5;         // 3.5–6 saniye
-      const size = 22 + Math.random() * 10;          // 22–32 px
+      const dx = (Math.random() - 0.5) * 320;        
+      const dur = 3.5 + Math.random() * 2.5;         
+      const size = 22 + Math.random() * 10;          
 
       heart.style.left = startX + "px";
       heart.style.setProperty("--dx", dx + "px");
@@ -406,20 +406,20 @@
     }
   }
 
-  // Daha sık kalp
+  
   setInterval(spawnFallingHeart, 160);
 
-  // Güçlendirilmiş kar üretme
+  
   function spawnSnow() {
-    const count = 2 + Math.floor(Math.random() * 2); // 2–3 kar tanesi
+    const count = 2 + Math.floor(Math.random() * 2); 
     for (let i = 0; i < count; i++) {
       const snow = document.createElement("div");
       snow.classList.add("snowflake");
       snow.innerHTML = "❄";
 
       const startX = Math.random() * window.innerWidth;
-      const size = 10 + Math.random() * 12;          // 10–22 px
-      const duration = 4 + Math.random() * 4;        // 4–8 saniye
+      const size = 10 + Math.random() * 12;          
+      const duration = 4 + Math.random() * 4;        
 
       snow.style.left = startX + "px";
       snow.style.fontSize = size + "px";
@@ -431,7 +431,7 @@
     }
   }
 
-  // Daha sık kar
+  
   setInterval(spawnSnow, 90);
 
   function checkPw() {
@@ -470,3 +470,4 @@
 
 </body>
 </html>
+
