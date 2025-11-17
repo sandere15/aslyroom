@@ -29,17 +29,22 @@
         if (!containerRef.current) return;
 
         // --- ARKA PLAN SESİ --- //
-        const audio = new Audio("sounds/arkas.mp3");
+        const audio = new Audio("sounds/arkas.mp3"); // <- dosya adı tam olarak böyle olsun
         audio.loop = true;
         audio.volume = 0.7;
 
-        const tryPlay = () => {
-          audio.play().catch(() => {
-            setTimeout(tryPlay, 1000); // engellenirse tekrar dene
+        // Tarayıcı autoplay engeline takılmamak için:
+        const startAudio = () => {
+          audio.play().catch(err => {
+            console.log("Ses çalma engellendi:", err);
           });
+          window.removeEventListener("click", startAudio);
+          window.removeEventListener("touchstart", startAudio);
         };
 
-        tryPlay();
+        // İlk tık / dokunuşta sesi başlat
+        window.addEventListener("click", startAudio);
+        window.addEventListener("touchstart", startAudio);
         // --- SES BİTİŞ --- //
 
         const scene = new THREE.Scene();
@@ -340,18 +345,15 @@
 
         return () => {
           window.removeEventListener('resize', handleResize);
+          window.removeEventListener("click", startAudio);
+          window.removeEventListener("touchstart", startAudio);
+          audio.pause();
+          audio.src = "";
+
           if (containerRef.current && renderer.domElement.parentNode === containerRef.current) {
             containerRef.current.removeChild(renderer.domElement);
           }
           renderer.dispose();
-          ghostGeometry.dispose();
-          ghostMaterial.dispose();
-          rainGeometry.dispose();
-          rainMaterial.dispose();
-          fogGeometry.dispose();
-          fogMaterial.dispose();
-          audio.pause();
-          audio.src = "";
         };
       }, []);
 
