@@ -9,9 +9,21 @@
       padding: 0;
       box-sizing: border-box;
     }
+
+    #bg-audio {
+      position: fixed;
+      bottom: 10px;
+      left: 10px;
+      z-index: 9999;
+      max-width: 80vw;
+    }
   </style>
 </head>
 <body>
+  <!-- ARKA PLAN SESİ -->
+  <!-- DİKKAT: dosya adı ve klasör: sounds/arkas.mp3 -->
+  <audio id="bg-audio" src="sounds/arkas.mp3" loop controls></audio>
+
   <div id="root"></div>
 
   <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
@@ -19,6 +31,24 @@
   <script src="https://cdn.jsdelivr.net/npm/three/build/three.min.js"></script>
 
   <script>
+    // Sayfa yüklendiğinde: ilk tıklamada sesi başlat
+    window.addEventListener("DOMContentLoaded", () => {
+      const audioEl = document.getElementById("bg-audio");
+      if (!audioEl) return;
+
+      // Ekrana tıklayınca ses başlasın
+      const startAudio = () => {
+        audioEl.play().catch(err => {
+          console.log("Ses çalma hatası:", err);
+        });
+        window.removeEventListener("click", startAudio);
+        window.removeEventListener("touchstart", startAudio);
+      };
+
+      window.addEventListener("click", startAudio);
+      window.addEventListener("touchstart", startAudio);
+    });
+
     const { useEffect, useRef } = React;
     const THREE = window.THREE;
 
@@ -27,25 +57,6 @@
 
       useEffect(() => {
         if (!containerRef.current) return;
-
-        // --- ARKA PLAN SESİ --- //
-        const audio = new Audio("sounds/arkas.mp3"); // <- dosya adı tam olarak böyle olsun
-        audio.loop = true;
-        audio.volume = 0.7;
-
-        // Tarayıcı autoplay engeline takılmamak için:
-        const startAudio = () => {
-          audio.play().catch(err => {
-            console.log("Ses çalma engellendi:", err);
-          });
-          window.removeEventListener("click", startAudio);
-          window.removeEventListener("touchstart", startAudio);
-        };
-
-        // İlk tık / dokunuşta sesi başlat
-        window.addEventListener("click", startAudio);
-        window.addEventListener("touchstart", startAudio);
-        // --- SES BİTİŞ --- //
 
         const scene = new THREE.Scene();
         scene.fog = new THREE.FogExp2(0x111111, 0.08);
@@ -180,7 +191,7 @@
         ghost.add(leftEye);
 
         const rightEye = new THREE.Mesh(eyeGeometry.clone(), eyeMaterial.clone());
-        rightEye.material.uniforms.time = { value: 0 };
+        rightEye.material.uniforms.time.value = 0;
         rightEye.position.set(0.25, 0.3, 0.95);
         ghost.add(rightEye);
 
@@ -229,9 +240,9 @@
           offsets[i] = Math.random() * 10;
         }
 
-        rainGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        rainGeometry.setAttribute('speed', new THREE.BufferAttribute(speeds, 1));
-        rainGeometry.setAttribute('offset', new THREE.BufferAttribute(offsets, 1));
+        rainGeometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+        rainGeometry.setAttribute("speed", new THREE.BufferAttribute(speeds, 1));
+        rainGeometry.setAttribute("offset", new THREE.BufferAttribute(offsets, 1));
 
         const rainMaterial = new THREE.ShaderMaterial({
           uniforms: {
@@ -264,8 +275,8 @@
           fogSizes[i] = Math.random() * 1.5 + 0.5;
         }
 
-        fogGeometry.setAttribute('position', new THREE.BufferAttribute(fogPositions, 3));
-        fogGeometry.setAttribute('size', new THREE.BufferAttribute(fogSizes, 1));
+        fogGeometry.setAttribute("position", new THREE.BufferAttribute(fogPositions, 3));
+        fogGeometry.setAttribute("size", new THREE.BufferAttribute(fogSizes, 1));
 
         const fogVertexShader = `
           attribute float size;
@@ -341,40 +352,31 @@
           renderer.setSize(window.innerWidth, window.innerHeight);
         };
 
-        window.addEventListener('resize', handleResize);
+        window.addEventListener("resize", handleResize);
 
         return () => {
-          window.removeEventListener('resize', handleResize);
-          window.removeEventListener("click", startAudio);
-          window.removeEventListener("touchstart", startAudio);
-          audio.pause();
-          audio.src = "";
-
-          if (containerRef.current && renderer.domElement.parentNode === containerRef.current) {
-            containerRef.current.removeChild(renderer.domElement);
-          }
-          renderer.dispose();
+          window.removeEventListener("resize", handleResize);
         };
       }, []);
 
-      return React.createElement('div', {
+      return React.createElement("div", {
         ref: containerRef,
-        style: { width: '100vw', height: '100vh', overflow: 'hidden' }
+        style: { width: "100vw", height: "100vh", overflow: "hidden" }
       });
     }
 
     try {
-      const container = document.getElementById('root');
+      const container = document.getElementById("root");
       if (!container) {
-        console.error('Root element (#root) not found in DOM. Add <div id="root"></div> to your HTML.');
+        console.error("Root element (#root) not found in DOM.");
       } else if (!ReactDOM || !ReactDOM.createRoot) {
-        console.error('ReactDOM.createRoot not available. Make sure ReactDOM v18 is loaded.');
+        console.error("ReactDOM.createRoot not available.");
       } else {
         const root = ReactDOM.createRoot(container);
         root.render(React.createElement(GhostScene));
       }
     } catch (mountErr) {
-      console.error('Mount error:', mountErr);
+      console.error("Mount error:", mountErr);
     }
   </script>
 </body>
