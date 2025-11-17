@@ -3,6 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <title>Ghost Scene</title>
+
+  <!-- İsteğe bağlı: biraz daha havalı font için -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Manrope:wght@300;400;500&display=swap" rel="stylesheet">
+
   <style>
     * {
       margin: 0;
@@ -10,9 +16,80 @@
       box-sizing: border-box;
     }
 
-    /* Tüm audio etiketlerini gizle */
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: #000;
+      font-family: "Manrope", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #f5f5ff;
+      overflow: hidden;
+    }
+
     audio {
       display: none;
+    }
+
+    /* --- GİRİŞ EKRANI YAZI STİLLERİ --- */
+    .ghost-label {
+      font-size: 12px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(195, 195, 255, 0.85);
+      font-weight: 400;
+      opacity: 0.9;
+    }
+
+    .ghost-title {
+      font-family: "Cinzel Decorative", "Manrope", system-ui, serif;
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      margin-top: 4px;
+      margin-bottom: 4px;
+      background: linear-gradient(130deg, #ffffff, #b7a7ff, #ff8ad6);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow:
+        0 0 8px rgba(170, 150, 255, 0.9),
+        0 0 14px rgba(0, 0, 0, 0.9);
+      animation: ghostGlow 3.2s ease-in-out infinite alternate;
+    }
+
+    .ghost-tagline {
+      font-size: 12px;
+      color: rgba(210, 210, 255, 0.78);
+      font-style: italic;
+      line-height: 1.5;
+      text-shadow: 0 0 6px rgba(90, 80, 200, 0.7);
+      animation: ghostFade 6s ease-in-out infinite;
+    }
+
+    @keyframes ghostGlow {
+      0% {
+        text-shadow:
+          0 0 4px rgba(168, 148, 255, 0.6),
+          0 0 12px rgba(255, 138, 214, 0.45);
+        transform: translateY(0px);
+      }
+      100% {
+        text-shadow:
+          0 0 12px rgba(220, 210, 255, 1),
+          0 0 22px rgba(255, 138, 214, 0.9);
+        transform: translateY(-1px);
+      }
+    }
+
+    @keyframes ghostFade {
+      0% {
+        opacity: 0.75;
+      }
+      50% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0.7;
+      }
     }
   </style>
 </head>
@@ -37,16 +114,17 @@
       });
     }
 
-    // Kullanıcı ilk kez ekrana dokunduğunda / tıkladığında çalışsın
     document.addEventListener("click", startAudio, { once: true });
     document.addEventListener("touchstart", startAudio, { once: true });
     // --------------------------------------------------
 
-    const { useEffect, useRef } = React;
+    const { useEffect, useRef, useState } = React;
     const THREE = window.THREE;
 
     function GhostScene() {
       const containerRef = useRef(null);
+      const [name, setName] = useState("");
+      const [showOverlay, setShowOverlay] = useState(true);
 
       useEffect(() => {
         if (!containerRef.current) return;
@@ -65,6 +143,12 @@
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setClearColor(0x0a0a0a);
+        renderer.domElement.style.position = "absolute";
+        renderer.domElement.style.top = "0";
+        renderer.domElement.style.left = "0";
+        renderer.domElement.style.width = "100%";
+        renderer.domElement.style.height = "100%";
+
         containerRef.current.appendChild(renderer.domElement);
 
         // ---------- GHOST SHADER ----------
@@ -370,18 +454,138 @@
         };
       }, []);
 
-      return React.createElement('div', {
-        ref: containerRef,
-        style: { width: '100vw', height: '100vh', overflow: 'hidden' }
-      });
+      function handleEnter() {
+        if (name.trim().length === 0) return;
+        setShowOverlay(false);
+      }
+
+      function handleKeyDown(e) {
+        if (e.key === "Enter") {
+          handleEnter();
+        }
+      }
+
+      return React.createElement(
+        "div",
+        {
+          ref: containerRef,
+          style: {
+            position: "relative",
+            width: "100vw",
+            height: "100vh",
+            overflow: "hidden"
+          }
+        },
+        showOverlay &&
+          React.createElement(
+            "div",
+            {
+              style: {
+                position: "absolute",
+                inset: 0,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                background: "radial-gradient(circle at top, rgba(40,40,80,0.7), rgba(3,0,10,0.96))",
+                backdropFilter: "blur(7px)",
+                WebkitBackdropFilter: "blur(7px)",
+                zIndex: 10
+              }
+            },
+            React.createElement(
+              "div",
+              {
+                style: {
+                  padding: "22px 26px",
+                  minWidth: "260px",
+                  maxWidth: "320px",
+                  background: "rgba(5, 3, 20, 0.92)",
+                  borderRadius: "18px",
+                  border: "1px solid rgba(130, 120, 255, 0.55)",
+                  boxShadow:
+                    "0 0 25px rgba(120,110,255,0.6), 0 0 80px rgba(0,0,0,1)",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "10px",
+                  textAlign: "center"
+                }
+              },
+              React.createElement(
+                "div",
+                { className: "ghost-label" },
+                ""
+              ),
+              React.createElement(
+                "div",
+                { className: "ghost-title" },
+                "İsmini yaz"
+              ),
+              React.createElement(
+                "p",
+                { className: "ghost-tagline" },
+                "Karanlık bile seni görünce ürperiyor"
+              ),
+              React.createElement(
+                "div",
+                {
+                  style: {
+                    display: "flex",
+                    gap: "8px",
+                    marginTop: "6px"
+                  }
+                },
+                React.createElement("input", {
+                  type: "text",
+                  value: name,
+                  onChange: e => setName(e.target.value),
+                  onKeyDown: handleKeyDown,
+                  placeholder: "İsmin...",
+                  style: {
+                    flex: 1,
+                    padding: "8px 10px",
+                    borderRadius: "999px",
+                    border: "1px solid rgba(150,140,255,0.8)",
+                    background: "rgba(10, 7, 35, 0.97)",
+                    color: "#f5f5ff",
+                    fontSize: "13px",
+                    outline: "none",
+                    boxShadow: "0 0 12px rgba(130,120,255,0.65) inset"
+                  }
+                }),
+                React.createElement(
+                  "button",
+                  {
+                    onClick: handleEnter,
+                    style: {
+                      border: "none",
+                      outline: "none",
+                      padding: "8px 14px",
+                      borderRadius: "999px",
+                      fontSize: "12px",
+                      fontWeight: 500,
+                      cursor: "pointer",
+                      background:
+                        "linear-gradient(135deg, #8c7bff, #ff6ec7)",
+                      color: "#050310",
+                      boxShadow:
+                        "0 0 14px rgba(255,110,199,0.9), 0 0 26px rgba(140,123,255,0.9)",
+                      whiteSpace: "nowrap"
+                    }
+                  },
+                  "GİR"
+                )
+              )
+            )
+          )
+      );
     }
 
     try {
-      const container = document.getElementById('root');
+      const container = document.getElementById("root");
       const root = ReactDOM.createRoot(container);
       root.render(React.createElement(GhostScene));
     } catch (err) {
-      console.error('Mount error:', err);
+      console.error("Mount error:", err);
     }
   </script>
 </body>
