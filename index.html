@@ -104,7 +104,7 @@
   <script src="https://cdn.jsdelivr.net/npm/three/build/three.min.js"></script>
 
   <script>
-    // --------- SES: İLK TIKLAMADA BAŞLAT ---------
+    // --------- SES: SADECE GİR / ENTER İLE BAŞLAT ---------
     function startAudio() {
       const audio = document.getElementById("bg-audio");
       if (!audio) return;
@@ -113,9 +113,7 @@
         console.log("Ses başlatılamadı:", err);
       });
     }
-
-    document.addEventListener("click", startAudio, { once: true });
-    document.addEventListener("touchstart", startAudio, { once: true });
+    // document click listener YOK artık
     // --------------------------------------------------
 
     const { useEffect, useRef, useState } = React;
@@ -456,7 +454,8 @@
 
       function handleEnter() {
         if (name.trim().length === 0) return;
-        setShowOverlay(false);
+        startAudio();          // GİR / Enter ile müzik başlar
+        setShowOverlay(false); // giriş ekranı kaybolur
       }
 
       function handleKeyDown(e) {
