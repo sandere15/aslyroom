@@ -2,133 +2,362 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8" />
-  <title>Bell Always On</title>
-
+  <title>Ghost Scene</title>
   <style>
     * {
-      box-sizing: border-box;
-      transition: filter 0.4s ease-in-out, box-shadow 0.4s ease-in-out,
-        opacity 0.4s ease-in-out, color 0.4s ease-in-out, background 0.4s ease-in-out,
-        text-shadow 0.4s ease-in-out;
-    }
-    *::before,
-    *::after {
-      transition: filter 0.4s ease-in-out, box-shadow 0.4s ease-in-out,
-        opacity 0.4s ease-in-out, color 0.4s ease-in-out, background 0.4s ease-in-out,
-        text-shadow 0.4s ease-in-out;
-    }
-
-    html,
-    body {
-      height: 100%;
-      overflow: hidden;
       margin: 0;
-      background: #000;
-    }
-
-    body {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: calc(var(--_size) * 0.01);
-      --_size: min(min(600px, 50vh), 50vw);
-      --base-clr: #b7b5b4;
-      --degofrot: 0.8;
-    }
-
-    .bell-container {
-      width: 80em;
-      height: 80em;
-      opacity: 1;
-      cursor: default;
-      transform-origin: 50% -50vh;
-      animation: 5s ease-in-out infinite bell;
-    }
-
-    @keyframes bell {
-      0% { rotate: calc(1deg * var(--degofrot)); }
-      50% { rotate: calc(-1deg * var(--degofrot)); }
-      100% { rotate: calc(1deg * var(--degofrot)); }
-    }
-
-    .bell-container,
-    .bell-container * {
-      position: absolute;
-      left: 0; right: 0;
-      top: 0; bottom: 0;
-      margin: auto;
-    }
-
-    .rope {
-      height: 50vh;
-      width: 2em;
-      translate: 0 -52%;
-      background: linear-gradient(90deg, #2d54744d 0%, #000b 30%, transparent 100%),
-        repeating-linear-gradient(-70deg, #252525, #888 2%, #3a3a3a 3%);
-    }
-
-    .bell-top {
-      width: 14%;
-      height: 14%;
-      border-radius: 50%;
-      translate: 0 -28em;
-      background: var(--base-clr);
-      box-shadow: inset -1em -0.5em 2em 0.5em #fff,
-        inset 1em -1em 2em 3em #000,
-        0 -0.1em 0.4em 0.3em #c6eaffa8;
-    }
-
-    .bell-base {
-      width: 50%;
-      height: 50%;
-      border-radius: 50%;
-      translate: 0 -24%;
-      background: var(--base-clr);
-      box-shadow: 0 -0.1em 0.4em 0.2em #c6eaffa8;
-    }
-
-    .bell-base:nth-child(2) {
-      filter: brightness(3) blur(1em);
-      scale: 0.74 0.84;
-      translate: 0em -11em;
-    }
-
-    .glow {
-      width: 100%;
-      height: 100%;
-      filter: brightness(2) blur(2em);
-    }
-
-    .grain {
-      z-index: 10;
-      position: absolute;
-      pointer-events: none;
-      width: 100%;
-      height: 100%;
-      background: radial-gradient(circle at 50% 50%, #000, #0000),
-        url("data:image/svg+xml,%3Csvg viewBox='0 0 600 600' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='2' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-      filter: contrast(100%) brightness(200%) grayscale(1) opacity(0.168);
-      mix-blend-mode: screen;
+      padding: 0;
+      box-sizing: border-box;
     }
   </style>
 </head>
+<body>
+  <div id="root"></div>
 
-<!-- 🔥 TIKLANINCA MÜZİK BAŞLASIN -->
-<body onclick="document.getElementById('bgAudio').play()">
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three/build/three.min.js"></script>
 
-  <!-- 🔊 SES DOSYASI (sounds/arkas.mp3) -->
-  <audio id="bgAudio" src="sounds/arkas.mp3" preload="auto"></audio>
+  <script>
+    const { useEffect, useRef } = React;
+    const THREE = window.THREE;
 
-  <div class="bell-container">
-    <div class="rope"></div>
-    <div class="bell-top"></div>
+    function GhostScene() {
+      const containerRef = useRef(null);
 
-    <div class="bell-base"></div>
-    <div class="bell-base"></div>
+      useEffect(() => {
+        if (!containerRef.current) return;
 
-    <div class="glow"></div>
-  </div>
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x111111, 0.08);
 
-  <div class="grain"></div>
+        const camera = new THREE.PerspectiveCamera(
+          75,
+          window.innerWidth / window.innerHeight,
+          0.1,
+          1000
+        );
+        camera.position.z = 3.5;
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0x0a0a0a);
+        containerRef.current.appendChild(renderer.domElement);
+
+        const ghostVertexShader = `
+          uniform float time;
+          varying vec2 vUv;
+          varying vec3 vNormal;
+          varying vec3 vPosition;
+          
+          void main() {
+            vUv = uv;
+            vNormal = normalize(normalMatrix * normal);
+            
+            vec3 pos = position;
+            float wave = sin(pos.y * 3.0 + time * 2.0) * 0.1;
+            pos.x += wave * 0.3;
+            pos.z += cos(pos.y * 2.0 + time * 1.5) * 0.1;
+            
+            vPosition = pos;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+          }
+        `;
+
+        const ghostFragmentShader = `
+          uniform float time;
+          uniform vec3 ghostColor;
+          varying vec2 vUv;
+          varying vec3 vNormal;
+          varying vec3 vPosition;
+          
+          void main() {
+            vec3 viewDir = normalize(cameraPosition - vPosition);
+            float fresnel = pow(1.0 - max(dot(viewDir, vNormal), 0.0), 3.0);
+            
+            float pulse = sin(time * 2.0) * 0.2 + 0.8;
+            float glow = fresnel * pulse;
+            
+            float noise = fract(sin(dot(vUv * 10.0 + time * 0.5, vec2(12.9898, 78.233))) * 43758.5453);
+            glow += noise * 0.1;
+            
+            float fadeBottom = smoothstep(-1.5, 0.5, vPosition.y);
+            float alpha = (glow * 0.6 + 0.2) * fadeBottom;
+            
+            vec3 color = ghostColor * (1.0 + glow * 0.5);
+            
+            gl_FragColor = vec4(color, alpha * 0.7);
+          }
+        `;
+
+        const ghostMaterial = new THREE.ShaderMaterial({
+          uniforms: {
+            time: { value: 0 },
+            ghostColor: { value: new THREE.Color(0.4, 0.4, 0.6) }
+          },
+          vertexShader: ghostVertexShader,
+          fragmentShader: ghostFragmentShader,
+          transparent: true,
+          side: THREE.DoubleSide,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false
+        });
+
+        const ghostGeometry = new THREE.SphereGeometry(1, 32, 32);
+        ghostGeometry.scale(1, 1.5, 1);
+        const ghost = new THREE.Mesh(ghostGeometry, ghostMaterial);
+        ghost.position.y = 0.5;
+        ghost.scale.set(1.5, 1.5, 1.5);
+        scene.add(ghost);
+
+        const eyeVertexShader = `
+          uniform float time;
+          varying vec2 vUv;
+          
+          void main() {
+            vUv = uv;
+            vec3 pos = position;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+          }
+        `;
+
+        const eyeFragmentShader = `
+          uniform float time;
+          varying vec2 vUv;
+          
+          void main() {
+            vec2 center = vUv - vec2(0.5);
+            float dist = length(center);
+            
+            float outerGlow = smoothstep(0.5, 0.2, dist);
+            
+            float pupil = smoothstep(0.15, 0.12, dist);
+            
+            float blink = step(0.5, sin(time * 0.3) * 0.5 + 0.5);
+            float blinkMask = smoothstep(0.2, 0.5, abs(vUv.y - 0.5));
+            
+            float alpha = outerGlow * (1.0 - pupil * 0.7) * mix(blinkMask, 1.0, blink);
+            
+            vec3 color = mix(vec3(0.1, 0.1, 0.3), vec3(0.4, 0.4, 0.6), outerGlow);
+            
+            gl_FragColor = vec4(color, alpha * 0.9);
+          }
+        `;
+
+        const eyeMaterial = new THREE.ShaderMaterial({
+          uniforms: {
+            time: { value: 0 }
+          },
+          vertexShader: eyeVertexShader,
+          fragmentShader: eyeFragmentShader,
+          transparent: true,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false
+        });
+
+        const eyeGeometry = new THREE.PlaneGeometry(0.3, 0.3);
+        const leftEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
+        leftEye.position.set(-0.25, 0.3, 0.95);
+        ghost.add(leftEye);
+
+        const rightEye = new THREE.Mesh(eyeGeometry.clone(), eyeMaterial.clone());
+        rightEye.material.uniforms.time = { value: 0 };
+        rightEye.position.set(0.25, 0.3, 0.95);
+        ghost.add(rightEye);
+
+        const rainVertexShader = `
+          attribute float speed;
+          attribute float offset;
+          uniform float time;
+          varying float vAlpha;
+          
+          void main() {
+            vec3 pos = position;
+            float t = mod(time * speed + offset, 10.0);
+            pos.y = 10.0 - t;
+            
+            vAlpha = smoothstep(0.0, 1.0, t) * smoothstep(10.0, 8.0, t);
+            
+            vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+            gl_PointSize = 2.0;
+            gl_Position = projectionMatrix * mvPosition;
+          }
+        `;
+
+        const rainFragmentShader = `
+          varying float vAlpha;
+          
+          void main() {
+            vec2 center = gl_PointCoord - vec2(0.5);
+            float dist = length(center);
+            if (dist > 0.5) discard;
+            
+            gl_FragColor = vec4(0.7, 0.8, 0.9, vAlpha * 0.6);
+          }
+        `;
+
+        const rainCount = 2000;
+        const rainGeometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(rainCount * 3);
+        const speeds = new Float32Array(rainCount);
+        const offsets = new Float32Array(rainCount);
+
+        for (let i = 0; i < rainCount; i++) {
+          positions[i * 3] = (Math.random() - 0.5) * 20;
+          positions[i * 3 + 1] = Math.random() * 10;
+          positions[i * 3 + 2] = (Math.random() - 0.5) * 20;
+          speeds[i] = Math.random() * 2 + 3;
+          offsets[i] = Math.random() * 10;
+        }
+
+        rainGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        rainGeometry.setAttribute('speed', new THREE.BufferAttribute(speeds, 1));
+        rainGeometry.setAttribute('offset', new THREE.BufferAttribute(offsets, 1));
+
+        const rainMaterial = new THREE.ShaderMaterial({
+          uniforms: {
+            time: { value: 0 }
+          },
+          vertexShader: rainVertexShader,
+          fragmentShader: rainFragmentShader,
+          transparent: true,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false
+        });
+
+        const rain = new THREE.Points(rainGeometry, rainMaterial);
+        scene.add(rain);
+
+        const fogGeometry = new THREE.BufferGeometry();
+        const fogCount = 300;
+        const fogPositions = new Float32Array(fogCount * 3);
+        const fogSizes = new Float32Array(fogCount);
+
+        for (let i = 0; i < fogCount; i++) {
+          const radius = Math.pow(Math.random(), 0.6) * 12;
+          const theta = Math.random() * Math.PI * 2;
+          const phi = Math.acos(2 * Math.random() - 1);
+          
+          fogPositions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
+          fogPositions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta) * 0.6;
+          fogPositions[i * 3 + 2] = radius * Math.cos(phi);
+          
+          fogSizes[i] = Math.random() * 1.5 + 0.5;
+        }
+
+        fogGeometry.setAttribute('position', new THREE.BufferAttribute(fogPositions, 3));
+        fogGeometry.setAttribute('size', new THREE.BufferAttribute(fogSizes, 1));
+
+        const fogVertexShader = `
+          attribute float size;
+          varying float vDepth;
+          
+          void main() {
+            vDepth = (modelViewMatrix * vec4(position, 1.0)).z;
+            vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+            gl_PointSize = size * (300.0 / -mvPosition.z);
+            gl_Position = projectionMatrix * mvPosition;
+          }
+        `;
+
+        const fogFragmentShader = `
+          varying float vDepth;
+          
+          void main() {
+            vec2 center = gl_PointCoord - vec2(0.5);
+            float dist = length(center);
+            
+            float alpha = smoothstep(0.5, 0.0, dist);
+            
+            float depthFade = smoothstep(-15.0, -5.0, vDepth);
+            
+            gl_FragColor = vec4(0.3, 0.3, 0.35, alpha * 0.15 * depthFade);
+          }
+        `;
+
+        const fogMaterial = new THREE.ShaderMaterial({
+          vertexShader: fogVertexShader,
+          fragmentShader: fogFragmentShader,
+          transparent: true,
+          blending: THREE.NormalBlending,
+          depthWrite: false
+        });
+
+        const fog = new THREE.Points(fogGeometry, fogMaterial);
+        scene.add(fog);
+
+        const ambientLight = new THREE.AmbientLight(0x222244, 0.5);
+        scene.add(ambientLight);
+
+        const pointLight = new THREE.PointLight(0xff8844, 1.5, 10);
+        pointLight.position.set(0, 1, 2);
+        scene.add(pointLight);
+
+        let time = 0;
+        const animate = () => {
+          requestAnimationFrame(animate);
+          time += 0.016;
+
+          ghostMaterial.uniforms.time.value = time;
+          rainMaterial.uniforms.time.value = time;
+          eyeMaterial.uniforms.time.value = time;
+          rightEye.material.uniforms.time.value = time;
+
+          ghost.position.y = 0.5 + Math.sin(time * 0.8) * 0.3;
+          ghost.rotation.y = Math.sin(time * 0.3) * 0.2;
+
+          fog.rotation.y += 0.0005;
+
+          camera.position.x = Math.sin(time * 0.1) * 0.5;
+          camera.lookAt(ghost.position);
+
+          renderer.render(scene, camera);
+        };
+
+        animate();
+
+        const handleResize = () => {
+          camera.aspect = window.innerWidth / window.innerHeight;
+          camera.updateProjectionMatrix();
+          renderer.setSize(window.innerWidth, window.innerHeight);
+        };
+
+        window.addEventListener('resize', handleResize);
+
+        return () => {
+          window.removeEventListener('resize', handleResize);
+          if (containerRef.current && renderer.domElement.parentNode === containerRef.current) {
+            containerRef.current.removeChild(renderer.domElement);
+          }
+          renderer.dispose();
+          ghostGeometry.dispose();
+          ghostMaterial.dispose();
+          rainGeometry.dispose();
+          rainMaterial.dispose();
+          fogGeometry.dispose();
+          fogMaterial.dispose();
+        };
+      }, []);
+
+      return React.createElement('div', {
+        ref: containerRef,
+        style: { width: '100vw', height: '100vh', overflow: 'hidden' }
+      });
+    }
+
+    try {
+      const container = document.getElementById('root');
+      if (!container) {
+        console.error('Root element (#root) not found in DOM. Add <div id="root"></div> to your HTML.');
+      } else if (!ReactDOM || !ReactDOM.createRoot) {
+        console.error('ReactDOM.createRoot not available. Make sure ReactDOM v18 is loaded.');
+      } else {
+        const root = ReactDOM.createRoot(container);
+        root.render(React.createElement(GhostScene));
+      }
+    } catch (mountErr) {
+      console.error('Mount error:', mountErr);
+    }
+  </script>
 </body>
 </html>
