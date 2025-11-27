@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Hello Kitty: Ultimate Love Universe</title>
+  <title>KİTY</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Montserrat:wght@400;600;700;800&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
   <style>
-    /* --- TEMEL AYARLAR --- */
+    
     * { box-sizing: border-box; margin: 0; padding: 0; cursor: default; user-select: none; -webkit-tap-highlight-color: transparent; }
     
     body {
@@ -19,11 +19,11 @@
       font-family: 'Poppins', sans-serif;
       display: flex; align-items: center; justify-content: center;
       transition: background 3s ease;
-      position: relative; /* Mobil kaymayı önlemek için */
+      position: relative; 
     }
     .hidden { display: none !important; }
 
-    /* MOUSE İZİ */
+    
     .trail-dot {
       position: absolute; width: 8px; height: 8px;
       background: radial-gradient(circle, #fff, #ff69b4);
@@ -32,7 +32,7 @@
     }
     @keyframes fadeTrail { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(0); opacity: 0; } }
 
-    /* --- 1. GİRİŞ EKRANI --- */
+    
     #name-screen {
       position: fixed; inset: 0; background: rgba(255, 255, 255, 0.3); backdrop-filter: blur(15px);
       display: flex; align-items: center; justify-content: center; z-index: 10000; transition: opacity 1s ease;
@@ -60,7 +60,7 @@
     #start-btn { margin-top: 20px; width: 100%; padding: 15px; border: none; border-radius: 30px; background: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%); color: #fff; font-family: 'Montserrat', sans-serif; font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: 0 10px 20px rgba(255, 20, 147, 0.3); transition: 0.2s; }
     #start-btn:hover { transform: translateY(-3px); }
 
-    /* --- 2. ANA EKRAN --- */
+    
     #main-content { width: 100%; height: 100vh; display: flex; align-items: center; justify-content: center; opacity: 0; transform: scale(0.95); transition: opacity 1s ease, transform 1s cubic-bezier(0.175, 0.885, 0.32, 1.275); overflow-y: auto; }
     #main-content.visible { opacity: 1; transform: scale(1); }
     .hk-wrapper { width: 100%; max-width: 1050px; padding: 20px; position: relative; z-index: 5; }
@@ -88,7 +88,7 @@
     @keyframes floatVisual { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
     .hk-circle img { width: 100%; height: 100%; object-fit: cover; }
 
-    /* --- MOBİL UYUMLULUK (RESPONSIVE) AYARLARI --- */
+    
     @media (max-width: 900px) {
       .hk-card { 
         flex-direction: column-reverse;
@@ -105,7 +105,7 @@
       #hk-glass-card { padding: 60px 20px 40px; }
     }
 
-    /* --- 3. ADIM: HEDİYE KUTUSU --- */
+   
     .surprise-overlay {
       position: fixed; inset: 0; background: rgba(20, 0, 10, 0.8);
       display: flex; align-items: center; justify-content: center;
@@ -117,7 +117,7 @@
 
     .gift-container { position: relative; width: 260px; height: 240px; cursor: pointer; z-index: 9600; display: flex; justify-content: center; align-items: flex-end; transform-origin: center bottom; }
     
-    /* Mobilde Hediye Kutusunu Küçült */
+   
     @media (max-width: 400px) {
         .gift-container { transform: scale(0.8); }
     }
@@ -201,7 +201,6 @@
     .warp-btn:active { transform: scale(0.95); }
     @keyframes btnGradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
-    /* --- 4. ADIM: WARP TUNNEL --- */
     #warp-tunnel { position: fixed; inset: 0; z-index: 20000; background: #000; perspective: 500px; overflow: hidden; display: none; opacity: 0; transition: opacity 1s; }
     #warp-tunnel.active { display: block; opacity: 1; }
     
@@ -220,7 +219,6 @@
     
     #flash-overlay { position: fixed; inset: 0; background: #fff; z-index: 30000; pointer-events: none; opacity: 0; transition: opacity 2s ease-out; }
 
-    /* --- 5. ADIM: FİNAL EVREN --- */
     #ultimate-universe {
       position: fixed; inset: 0; z-index: 15000;
       background: radial-gradient(ellipse at center, #4a0032 0%, #1a0014 60%, #000 100%);
@@ -259,12 +257,10 @@
     }
     @keyframes fadeInOut { 0%, 100% { opacity: 0.4; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-3px); } }
 
-    /* YÖRÜNGELER VE MOBİL DÜZENLEME */
     .orbit-system { position: absolute; width: 800px; height: 800px; transform-style: preserve-3d; animation: systemRotate 60s linear infinite; }
     .orbit-system.paused { animation-play-state: paused !important; }
     @keyframes systemRotate { from { transform: rotateX(60deg) rotateZ(0deg); } to { transform: rotateX(60deg) rotateZ(360deg); } }
 
-    /* Mobil için yörünge küçültme */
     @media (max-width: 768px) {
         .orbit-system { transform: scale(0.45); } 
     }
@@ -333,7 +329,6 @@
     .fs-1 { top: 10%; left: 50%; } .fs-2 { bottom: 15%; left: 50%; } .fs-3 { top: 50%; left: 5%; } 
     .fs-4 { top: 50%; right: 5%; } .fs-5 { top: 20%; right: 20%; } .fs-6 { bottom: 20%; left: 20%; }
 
-    /* YILDIZ GÜNCELLEMESİ: DAHA UZUN VE KALIN */
     .shooting-star {
       position: absolute; top: 0; left: 0; width: 250px; height: 3px;
       background: linear-gradient(to right, rgba(255,255,255,0), rgba(255,255,255,1) 50%, rgba(255,255,255,0));
@@ -393,7 +388,6 @@
 
     .close-love-popup { background: #ff69b4; color: white; border: none; padding: 15px 35px; border-radius: 30px; cursor: pointer; font-family: "Montserrat", sans-serif; font-weight: 700; font-size: 16px; }
 
-    /* --- ULTRA MİNİMAL VE ZARİF YAĞMUR --- */
     .rain-emoji {
       position: fixed;
       top: -50px;
@@ -510,12 +504,10 @@
   </div>
 
   <script>
-    /* SESLER */
-    const silentAudio = new Audio("sounds/sessiz.mp3"); // arka plandaki sessiz
-    const universeAudio = new Audio("sounds/sesli.mp3"); // pembe evren müziği
+    const silentAudio = new Audio("sounds/sessiz.mp3"); 
+    const universeAudio = new Audio("sounds/sesli.mp3"); 
     universeAudio.loop = true;
 
-    // Mouse İzi
     document.addEventListener("mousemove", (e) => {
       const dot = document.createElement("div");
       dot.classList.add("trail-dot");
@@ -523,7 +515,6 @@
       document.body.appendChild(dot); setTimeout(() => { dot.remove(); }, 800);
     });
 
-    // GİRİŞ İŞLEMİ
     const startBtn = document.getElementById("start-btn");
     const usernameInput = document.getElementById("username");
     const nameScreen = document.getElementById("name-screen");
@@ -533,7 +524,7 @@
     startBtn.addEventListener("click", () => {
       let name = usernameInput.value.trim();
       if (name.length === 0) { usernameInput.style.borderColor = "red"; return; }
-      userNameDisplay.textContent = "Fatma"; // ismi sabitledik
+      userNameDisplay.textContent = "Fatma"; 
       
       silentAudio.currentTime = 0;
       silentAudio.play().catch(e=>{}); 
@@ -547,7 +538,6 @@
     });
     usernameInput.addEventListener("keydown", (e) => { if (e.key === "Enter") startBtn.click(); });
 
-    // HEDİYE KUTUSU
     const surpriseBtn = document.getElementById("surprise-btn");
     const overlay = document.getElementById("surprise-overlay");
     const giftBox = document.getElementById("gift-box");
@@ -591,7 +581,6 @@
       }, 1500); 
     }
 
-    // TÜNEL & EVREN
     const warpBtn = document.getElementById("warp-btn");
     const warpTunnel = document.getElementById("warp-tunnel");
     const starContainer = document.getElementById("star-container");
@@ -611,11 +600,9 @@
     }
 
     warpBtn.addEventListener("click", () => {
-      // sessiz.mp3 durdur
       silentAudio.pause();
       silentAudio.currentTime = 0;
 
-      // sesli.mp3 başlat
       universeAudio.currentTime = 0;
       universeAudio.play().catch(e=>{});
 
@@ -633,7 +620,6 @@
       }, 10000);
     });
 
-    // EVREN İŞLEVLERİ
     const orbitSystem = document.getElementById('orbit-system');
 
     function toggleStar(el) {
@@ -676,25 +662,21 @@
     function createShootingStar() {
       if (!ultimateUniverse.classList.contains('visible')) return;
 
-      // --- Normal Kayan Yıldız (Daha Sık ve Belirgin) ---
-      // Her zaman bir normal yıldız oluştur (daha sık görmen için)
       const s2 = document.createElement('div'); 
       s2.classList.add('shooting-star');
       const sx = Math.random()*window.innerWidth; 
       const sy = Math.random()*window.innerHeight;
       s2.style.setProperty('--startX', sx+'px'); 
       s2.style.setProperty('--startY', sy+'px');
-      s2.style.setProperty('--endX', (sx-800)+'px'); // Daha uzun mesafeye kaydırıldı
-      s2.style.setProperty('--endY', (sy+800)+'px'); // Daha uzun mesafeye kaydırıldı
+      s2.style.setProperty('--endX', (sx-800)+'px'); 
+      s2.style.setProperty('--endY', (sy+800)+'px'); 
       ultimateUniverse.appendChild(s2); 
-      setTimeout(() => s2.remove(), 4000); // CSS'deki 4s süresiyle eşleşti
+      setTimeout(() => s2.remove(), 4000); 
 
       
-      // --- Özel Yıldız (Kontrollü ve Nadir) ---
-      // Eğer ekranda özel yıldız varsa yenisini oluşturma
       if (activeSpecialStar) return; 
 
-      const isSpecial = Math.random() < 0.2; // Olasılığı 0.2'ye düşürdük
+      const isSpecial = Math.random() < 0.2; 
 
       if (isSpecial) {
         const star = document.createElement('div');
@@ -713,7 +695,6 @@
       }
     }
 
-    // YILDIZ KAYMA SIKLIĞI 1000ms'den 500ms'ye düşürüldü (daha sık kayacak)
     function startShootingStars() { setInterval(createShootingStar, 500); }
     
     function showLovePopup() {
@@ -723,7 +704,6 @@
     }
     function closeLovePopup() { document.getElementById('love-popup').classList.remove('show'); }
 
-    // YAĞMUR
     function createRain() {
       const mainContent = document.getElementById("main-content");
       if (!mainContent.classList.contains("visible")) return;
@@ -754,3 +734,4 @@
   </script>
 </body>
 </html>
+
