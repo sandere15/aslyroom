@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
-    <title>Pong - Love Connection</title>
+    <title>Pong - Scroll Fix</title>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
@@ -18,15 +18,24 @@
             --text-main: #ffffff;
         }
 
+        /* --- BODY AYARLARI (GÜNCELLENDİ) --- */
+        /* Artık overflow: hidden yok, menüde aşağı inebil diye */
         body {
             background: radial-gradient(circle at center, #2b1a1a 0%, #0a0505 100%);
             color: var(--text-main);
             font-family: 'Montserrat', sans-serif;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            height: 100vh; margin: 0; overflow: hidden; touch-action: none;
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center;
+            min-height: 100vh; /* height yerine min-height */
+            margin: 0; 
+            padding: 20px; /* Kenarlardan boşluk */
+            box-sizing: border-box;
+            /* touch-action burada değil, sadece oyunda kapatacağız */
         }
 
-        /* --- ROTATE UYARISI --- */
+        /* Sadece dikey modda (Portrait) uyarıyı göster */
         #rotateWarning {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; z-index: 9999; flex-direction: column; 
@@ -42,39 +51,58 @@
             margin-bottom: 5px;
             background: linear-gradient(to right, var(--accent-gold), var(--accent-bordo));
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            text-align: center;
         }
 
         /* --- MENÜ --- */
         #menu {
-            width: 85%; max-width: 380px; text-align: center; background: var(--glass-bg);
-            padding: 25px; border-radius: 4px; border: 1px solid var(--border-color);
-            backdrop-filter: blur(20px); box-shadow: 0 30px 60px rgba(0,0,0,0.6); z-index: 10;
+            width: 100%; 
+            max-width: 400px; 
+            text-align: center; 
+            background: var(--glass-bg);
+            padding: 20px; 
+            border-radius: 8px; 
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(20px); 
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6); 
+            z-index: 10;
+            margin-bottom: 50px; /* Klavye açılınca pay kalsın */
         }
 
         .btn-group { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
         
         button {
-            background: var(--accent-gold); color: #000; border: none; padding: 15px;
+            background: var(--accent-gold); color: #000; border: none; padding: 12px;
             font-size: 0.9rem; font-family: 'Montserrat', sans-serif; font-weight: 700;
             letter-spacing: 1px; cursor: pointer; text-transform: uppercase;
-            transition: all 0.2s ease; border-radius: 2px;
+            transition: all 0.2s ease; border-radius: 4px;
         }
         button:active { transform: scale(0.95); }
         button.secondary { background: transparent; border: 2px solid var(--accent-gold); color: var(--accent-gold); }
 
         input {
-            padding: 12px; border: none; background: rgba(0,0,0,0.3); color: #fff;
-            font-family: 'Montserrat', sans-serif; font-size: 1.2rem; text-align: center;
+            padding: 10px; border: none; background: rgba(0,0,0,0.3); color: #fff;
+            font-family: 'Montserrat', sans-serif; font-size: 1.1rem; text-align: center;
             width: 100%; box-sizing: border-box; outline: none; letter-spacing: 2px;
             border-bottom: 2px solid var(--accent-gold); font-weight: 700; margin-bottom: 10px;
         }
-        input::placeholder { color: rgba(255,255,255,0.3); font-size: 0.9rem; letter-spacing: 0;}
+        input::placeholder { color: rgba(255,255,255,0.3); font-size: 0.8rem; letter-spacing: 0;}
 
-        /* --- OYUN ALANI --- */
+        /* --- OYUN ALANI (SABİT) --- */
+        /* Oyun başlayınca burası tüm ekranı kaplar ve kaydırmayı engeller */
         #gameContainer { 
-            display: none; position: relative; width: 100vw; height: 100vh; 
-            align-items: center; justify-content: center;
+            display: none; 
+            position: fixed; /* Sayfadan bağımsız */
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: #121212;
+            width: 100vw; 
+            height: 100vh; 
+            align-items: center; 
+            justify-content: center;
+            z-index: 100;
+            touch-action: none; /* SADECE BURADA KAYDIRMAYI ENGELLİYORUZ */
         }
+        
         canvas {
             max-width: 100%; max-height: 100%; width: auto; height: auto;
             background: rgba(20, 10, 10, 0.8); border: 1px solid var(--border-color);
@@ -84,10 +112,10 @@
         #timerDisplay {
             position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
             font-weight: 700; font-size: 2rem; color: rgba(255,255,255,0.9);
-            text-shadow: 0 0 15px rgba(212, 175, 55, 0.5); z-index: 5; pointer-events: none;
+            text-shadow: 0 0 15px rgba(212, 175, 55, 0.5); z-index: 105; pointer-events: none;
         }
 
-        #emojiBar { position: absolute; bottom: 20px; right: 30px; z-index: 5; }
+        #emojiBar { position: absolute; bottom: 20px; right: 30px; z-index: 105; }
         .emoji-btn {
             background: rgba(155, 27, 48, 0.4) !important; font-size: 1.8rem !important;
             width: 60px !important; height: 60px !important; border-radius: 50% !important; 
@@ -97,6 +125,7 @@
             animation: pulseHeart 2s infinite; user-select: none;
         }
         .emoji-btn:active { transform: scale(0.9); background: rgba(155, 27, 48, 0.8) !important; }
+        
         @keyframes pulseHeart {
             0% { transform: scale(1); box-shadow: 0 0 15px rgba(155, 27, 48, 0.5); }
             50% { transform: scale(1.1); box-shadow: 0 0 25px rgba(155, 27, 48, 0.8); }
@@ -107,7 +136,7 @@
             position: absolute; top: 20px; width: 90%;
             display: flex; justify-content: space-between; 
             font-size: 1rem; letter-spacing: 1px; text-transform: uppercase; font-weight: 700;
-            pointer-events: none; z-index: 4;
+            pointer-events: none; z-index: 104;
         }
 
         #winnerModal {
@@ -142,7 +171,7 @@
         <button style="width: 200px;" onclick="location.reload()">TEKRAR OYNA</button>
     </div>
 
-    <div id="mainContent">
+    <div id="mainContent" style="width:100%; display:flex; flex-direction:column; align-items:center;">
         <h1 id="gameTitle">Couple Pong</h1>
         
         <div id="menu">
@@ -175,20 +204,20 @@
                 <button class="secondary" style="margin-top:10px; padding:10px; font-size:0.8rem;" onclick="location.reload()">Geri</button>
             </div>
         </div>
+    </div>
 
-        <div id="gameContainer">
-            <div id="timerDisplay" class="hidden">1:30</div>
-            
-            <div class="player-labels">
-                <span style="color: var(--accent-gold)" id="p1Label">P1</span>
-                <span style="color: var(--accent-bordo)" id="p2Label">P2</span>
-            </div>
+    <div id="gameContainer">
+        <div id="timerDisplay" class="hidden">1:30</div>
+        
+        <div class="player-labels">
+            <span style="color: var(--accent-gold)" id="p1Label">P1</span>
+            <span style="color: var(--accent-bordo)" id="p2Label">P2</span>
+        </div>
 
-            <canvas id="gameCanvas" width="800" height="500"></canvas>
-            
-            <div id="emojiBar" class="hidden">
-                <div class="emoji-btn" onclick="sendLove()">❤️</div>
-            </div>
+        <canvas id="gameCanvas" width="800" height="500"></canvas>
+        
+        <div id="emojiBar" class="hidden">
+            <div class="emoji-btn" onclick="sendLove()">❤️</div>
         </div>
     </div>
 
@@ -211,7 +240,7 @@
     
     let particles = []; let ballTrail = []; let floatingEmojis = [];
 
-    // --- BAĞLANTI AYARLARI (STUN Server Ekli) ---
+    // --- PEER CONFIG ---
     const peerConfig = {
         debug: 1,
         config: {
@@ -266,51 +295,44 @@
         else if(conn && conn.open) conn.send({ type: 'MOVE', val: relativeY - PADDLE_HEIGHT/2 });
     }
 
-    window.addEventListener('touchmove', (e) => { if(gameActive) { e.preventDefault(); handleInput(e.touches[0].clientY); } }, { passive: false });
+    // Dokunmatik sadece oyun aktifken kilitli container içinde çalışır
+    window.addEventListener('touchmove', (e) => { 
+        if(gameActive) { 
+            e.preventDefault(); 
+            handleInput(e.touches[0].clientY); 
+        } 
+    }, { passive: false });
+    
     canvas.addEventListener('mousemove', (e) => handleInput(e.clientY));
 
-    // --- OYUN KURULUMU ---
+    // --- MODLAR ---
     function startSinglePlayer() {
         myName = getName(); opponentName = "CPU"; isSinglePlayer = true; isHost = true;
         updateNameLabels(); startGameUI("ANTRENMAN MODU"); startTimer();
     }
     
-    // --- HOST İŞLEMLERİ ---
     function createHostGame() {
-        myName = getName();
-        isHost = true; isSinglePlayer = false;
+        myName = getName(); isHost = true; isSinglePlayer = false;
         
-        // Rastgele 4 haneli kod üret (1000 - 9999)
         const randomCode = Math.floor(Math.random() * 9000) + 1000;
         const fullPeerID = "pong-love-" + randomCode;
 
         document.getElementById('step1').classList.add('hidden');
         document.getElementById('stepHostWait').classList.remove('hidden');
-        document.getElementById('hostCodeDisplay').innerText = randomCode; // Ekranda sadece sayı göster
+        document.getElementById('hostCodeDisplay').innerText = randomCode;
         document.getElementById('hostStatus').innerText = "Sunucu başlatılıyor...";
 
         peer = new Peer(fullPeerID, peerConfig);
 
-        peer.on('open', (id) => {
-            document.getElementById('hostStatus').innerText = "Hazır! Bekleniyor...";
+        peer.on('open', (id) => { document.getElementById('hostStatus').innerText = "Hazır! Bekleniyor..."; });
+        peer.on('error', (err) => { 
+            console.error(err); 
+            document.getElementById('hostStatus').innerText = "Hata (Yenile): " + err.type; 
+            if(err.type==='unavailable-id') createHostGame();
         });
-
-        peer.on('error', (err) => {
-            console.error(err);
-            document.getElementById('hostStatus').innerText = "Hata: " + err.type;
-            if(err.type === 'unavailable-id') {
-                // Çok nadir de olsa çakışırsa yeni kod dene
-                createHostGame();
-            }
-        });
-
-        peer.on('connection', (c) => { 
-            conn = c; 
-            setupConnection(); 
-        });
+        peer.on('connection', (c) => { conn = c; setupConnection(); });
     }
 
-    // --- GUEST İŞLEMLERİ ---
     function showJoinInput() { 
         myName = getName(); 
         document.getElementById('step1').classList.add('hidden'); 
@@ -319,13 +341,10 @@
 
     function joinGame() { 
         const inputCode = document.getElementById('joinInput').value.trim();
-        if(inputCode.length !== 4) {
-            document.getElementById('joinStatus').innerText = "Lütfen 4 haneli kodu giriniz.";
-            return;
-        }
+        if(inputCode.length !== 4) { document.getElementById('joinStatus').innerText = "4 hane giriniz."; return; }
 
         const fullDestID = "pong-love-" + inputCode;
-        document.getElementById('joinStatus').innerText = "Bağlanılıyor...";
+        document.getElementById('joinStatus').innerText = "Aranıyor...";
         
         peer = new Peer(null, peerConfig);
         
@@ -333,38 +352,19 @@
             conn = peer.connect(fullDestID);
             isHost = false; isSinglePlayer = false;
             
-            conn.on('open', () => {
-                setupConnection();
-            });
-            
-            // Timeout kontrolü
-            setTimeout(() => {
-                if(!conn || !conn.open) {
-                    document.getElementById('joinStatus').innerText = "Bağlanamadı. Kod doğru mu?";
-                }
-            }, 5000);
+            conn.on('open', () => { setupConnection(); });
+            setTimeout(() => { if(!conn || !conn.open) document.getElementById('joinStatus').innerText = "Bulunamadı."; }, 5000);
         });
-
-        peer.on('error', (err) => {
-             document.getElementById('joinStatus').innerText = "Hata: " + err.type;
-        });
+        peer.on('error', (err) => { document.getElementById('joinStatus').innerText = "Hata: " + err.type; });
     }
 
     function setupConnection() {
         conn.on('open', () => {
-            // İsim değiş tokuşu
             conn.send({ type: 'INFO', name: myName });
-            
             if(!isHost) startGameUI("BAĞLANDI"); else startTimer();
-            
             conn.on('data', (data) => { handleDataPacket(data); });
         });
-        
-        conn.on('close', () => { 
-            alert("Bağlantı koptu."); location.reload(); 
-        });
-        
-        // Arayüz temizliği
+        conn.on('close', () => { alert("Bağlantı koptu."); location.reload(); });
         document.getElementById('stepHostWait').classList.add('hidden');
         document.getElementById('stepJoin').classList.add('hidden');
     }
@@ -372,7 +372,7 @@
     function handleDataPacket(data) {
         if (data.type === 'INFO') {
             opponentName = data.name; updateNameLabels();
-            if(isHost) { conn.send({ type: 'INFO', name: myName }); startGameUI(opponentName + " BAĞLANDI"); }
+            if(isHost) { conn.send({ type: 'INFO', name: myName }); startGameUI(opponentName + " GELDİ"); }
         } else if (data.type === 'MOVE') { if(isHost) gameState.p2Y = data.val; }
         else if (data.type === 'EMOJI') { spawnFlyingText(data.emoji, false); }
         else if (data.gameOverCmd) { endGame(data.winner); } 
@@ -385,9 +385,10 @@
     }
     
     function startGameUI(msg) {
-        document.getElementById('menu').style.display = 'none'; 
-        document.getElementById('gameTitle').style.display = 'none';
+        // Menü ve Başlığı gizle
+        document.getElementById('mainContent').style.display = 'none';
         
+        // Oyun Container'ı GÖSTER (Fixed)
         const container = document.getElementById('gameContainer');
         container.style.display = 'flex';
         
@@ -490,12 +491,9 @@
         
         floatingEmojis.forEach((e,i) => {
             e.y += e.vy; e.life -= 0.015;
-            ctx.font = "bold 20px 'Montserrat'"; 
-            ctx.fillStyle = "#ffcccc"; 
-            ctx.textAlign = "center";
-            ctx.shadowColor = "#9B1B30"; ctx.shadowBlur = 10;
-            ctx.globalAlpha = e.life;
-            ctx.fillText(e.text, e.x, e.y);
+            ctx.font = "bold 20px 'Montserrat'"; ctx.fillStyle = "#ffcccc"; 
+            ctx.textAlign = "center"; ctx.shadowColor = "#9B1B30"; ctx.shadowBlur = 10;
+            ctx.globalAlpha = e.life; ctx.fillText(e.text, e.x, e.y);
             if(e.life <= 0) floatingEmojis.splice(i,1);
         });
         ctx.shadowBlur = 0; ctx.globalAlpha = 1;
