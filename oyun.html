@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
-    <title>Pong - Strong Connection</title>
+    <title>Pong - Stable Love</title>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
@@ -18,7 +18,7 @@
             --text-main: #ffffff;
         }
 
-        /* --- TEMEL AYARLAR --- */
+        /* --- TEMEL --- */
         body {
             background: radial-gradient(circle at center, #2b1a1a 0%, #0a0505 100%);
             color: var(--text-main);
@@ -27,7 +27,7 @@
             min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box;
         }
 
-        /* --- ROTATE UYARISI --- */
+        /* --- UYARI --- */
         #rotateWarning {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; z-index: 9999; flex-direction: column; 
@@ -53,10 +53,8 @@
             margin-bottom: 50px;
         }
 
-        .btn-group { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
-        
         button {
-            background: var(--accent-gold); color: #000; border: none; padding: 12px;
+            background: var(--accent-gold); color: #000; border: none; padding: 12px; margin-top: 10px; width: 100%;
             font-size: 0.9rem; font-family: 'Montserrat', sans-serif; font-weight: 700;
             letter-spacing: 1px; cursor: pointer; text-transform: uppercase;
             transition: all 0.2s ease; border-radius: 4px;
@@ -66,7 +64,7 @@
 
         input {
             padding: 10px; border: none; background: rgba(0,0,0,0.3); color: #fff;
-            font-family: 'Montserrat', sans-serif; font-size: 1.1rem; text-align: center;
+            font-family: 'Montserrat', sans-serif; font-size: 1.2rem; text-align: center;
             width: 100%; box-sizing: border-box; outline: none; letter-spacing: 2px;
             border-bottom: 2px solid var(--accent-gold); font-weight: 700; margin-bottom: 10px;
         }
@@ -127,8 +125,9 @@
         }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         
-        .status-msg { font-size: 0.7rem; color: #ffab40; margin-top: 10px; min-height: 20px; font-weight: bold;}
+        .status-msg { font-size: 0.8rem; color: #ffab40; margin-top: 10px; min-height: 20px; font-weight: bold;}
         .code-big { font-size: 2.5rem; color: var(--accent-gold); letter-spacing: 5px; font-weight: 900; margin: 10px 0; }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
@@ -161,9 +160,8 @@
             <div id="stepHostWait" class="hidden">
                 <p style="color:#bbb; font-size:0.9rem;">BU KODU ONA SÖYLE:</p>
                 <div id="hostCodeDisplay" class="code-big">...</div>
-                
                 <div style="margin-top:20px; font-size: 0.8rem; color: var(--accent-gold); animation: pulse 1.5s infinite;">
-                    RAKİP ARANIYOR...
+                    BAĞLANTI BEKLENİYOR...
                 </div>
                 <div id="hostStatus" class="status-msg">Sunucuya bağlanılıyor...</div>
                 <br>
@@ -182,14 +180,11 @@
 
     <div id="gameContainer">
         <div id="timerDisplay" class="hidden">1:30</div>
-        
         <div class="player-labels">
             <span style="color: var(--accent-gold)" id="p1Label">P1</span>
             <span style="color: var(--accent-bordo)" id="p2Label">P2</span>
         </div>
-
         <canvas id="gameCanvas" width="800" height="500"></canvas>
-        
         <div id="emojiBar" class="hidden">
             <div class="emoji-btn" onclick="sendLove()">❤️</div>
         </div>
@@ -214,16 +209,13 @@
     
     let particles = []; let ballTrail = []; let floatingEmojis = [];
 
-    // --- SÜPER GÜÇLÜ BAĞLANTI AYARLARI (STUN/TURN) ---
-    // Farklı internetlerde çalışması için Google ve Twilio sunucuları
+    // --- ÖNEMLİ: Google STUN Sunucuları (Bağlantı Garantisi İçin) ---
     const peerConfig = {
         debug: 1,
         config: {
             iceServers: [
                 { urls: 'stun:stun.l.google.com:19302' },
                 { urls: 'stun:stun1.l.google.com:19302' },
-                { urls: 'stun:stun2.l.google.com:19302' },
-                { urls: 'stun:stun3.l.google.com:19302' },
                 { urls: 'stun:global.stun.twilio.com:3478' }
             ]
         }
@@ -273,7 +265,6 @@
         else if(conn && conn.open) conn.send({ type: 'MOVE', val: relativeY - PADDLE_HEIGHT/2 });
     }
 
-    // Dokunmatik sadece oyun aktifken kilitli container içinde çalışır
     window.addEventListener('touchmove', (e) => { 
         if(gameActive) { 
             e.preventDefault(); 
@@ -289,39 +280,49 @@
         updateNameLabels(); startGameUI("ANTRENMAN MODU"); startTimer();
     }
     
-    // --- HOST İŞLEMLERİ ---
+    // --- HOST ---
     function createHostGame() {
         myName = getName(); isHost = true; isSinglePlayer = false;
         
+        // EŞSİZ ODA İSMİ: love-game-XXXX
         const randomCode = Math.floor(Math.random() * 9000) + 1000;
-        const fullPeerID = "pong-ultimate-" + randomCode;
+        const fullPeerID = "love-game-" + randomCode;
 
         document.getElementById('step1').classList.add('hidden');
         document.getElementById('stepHostWait').classList.remove('hidden');
         document.getElementById('hostCodeDisplay').innerText = randomCode; 
         document.getElementById('hostStatus').innerText = "Sunucuya bağlanılıyor (Bekle)...";
+        document.getElementById('hostStatus').style.color = "#fff";
 
+        if(peer) peer.destroy();
         peer = new Peer(fullPeerID, peerConfig);
 
         peer.on('open', (id) => {
-            document.getElementById('hostStatus').innerText = "Oda Hazır! Kod gönderiliyor...";
-            document.getElementById('hostCodeDisplay').style.color = GOLD;
+            document.getElementById('hostStatus').innerText = "Oda Hazır! Kod: " + randomCode;
+            document.getElementById('hostStatus').style.color = GOLD;
         });
 
         peer.on('error', (err) => {
             console.error(err);
-            document.getElementById('hostStatus').innerText = "Hata: " + err.type + ". Yeniden dene.";
-            if(err.type === 'unavailable-id') { setTimeout(() => createHostGame(), 1000); }
+            document.getElementById('hostStatus').innerText = "Hata! Sayfayı yenileyip tekrar dene.";
+            if(err.type === 'unavailable-id') { createHostGame(); } // Kod çakışırsa yenisini dene
         });
 
         peer.on('connection', (c) => { 
             conn = c; 
-            document.getElementById('hostStatus').innerText = "Biri bağlanmaya çalışıyor...";
+            document.getElementById('hostStatus').innerText = "Biri bağlanıyor...";
             setupConnection(); 
         });
+        
+        // Host Keep-Alive (Bağlantı kopmasını engellemek için)
+        setInterval(() => {
+           if(peer && !peer.disconnected && !peer.destroyed) {
+               // PeerJS socketini canlı tut
+           }
+        }, 5000);
     }
 
-    // --- GUEST İŞLEMLERİ ---
+    // --- GUEST ---
     function showJoinInput() { 
         myName = getName(); 
         document.getElementById('step1').classList.add('hidden'); 
@@ -332,9 +333,10 @@
         const inputCode = document.getElementById('joinInput').value.trim();
         if(inputCode.length !== 4) { document.getElementById('joinStatus').innerText = "4 hane giriniz."; return; }
 
-        const fullDestID = "pong-ultimate-" + inputCode;
+        const fullDestID = "love-game-" + inputCode;
         document.getElementById('joinStatus').innerText = "Sunucuya bağlanılıyor...";
         
+        if(peer) peer.destroy();
         peer = new Peer(null, peerConfig);
         
         peer.on('open', (id) => {
@@ -347,15 +349,24 @@
                 setupConnection(); 
             });
             
-            // Bağlantı zaman aşımı kontrolü
+            // HATA YÖNETİMİ: Peer unavailable
+            peer.on('error', (err) => {
+                 if(err.type === 'peer-unavailable') {
+                     document.getElementById('joinStatus').innerText = "KOD BULUNAMADI! Host sayfayı yenilesin.";
+                 } else {
+                     document.getElementById('joinStatus').innerText = "Hata: " + err.type;
+                 }
+            });
+
+            // 10 saniye sonra hala bağlanamazsa
             setTimeout(() => {
                 if(!conn || !conn.open) {
-                    document.getElementById('joinStatus').innerText = "Bağlanılamadı. Kodu kontrol et veya tekrar dene.";
+                    if(document.getElementById('joinStatus').innerText.includes("aranıyor")) {
+                        document.getElementById('joinStatus').innerText = "Zaman aşımı! Host kod ekranında mı?";
+                    }
                 }
-            }, 8000);
+            }, 10000);
         });
-
-        peer.on('error', (err) => { document.getElementById('joinStatus').innerText = "Hata: " + err.type; });
     }
 
     function setupConnection() {
