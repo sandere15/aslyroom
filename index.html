@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>TEST</title>
+  <title>Hello Kitty: Ultimate Love Universe</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -37,11 +37,11 @@
     #name-screen {
       position: fixed; inset: 0; background: rgba(255, 255, 255, 0.3); backdrop-filter: blur(15px);
       display: flex; flex-direction: column; align-items: center; justify-content: center; 
-      gap: 25px; z-index: 10000; transition: opacity 1s ease; padding: 20px; overflow-y: auto; 
+      gap: 20px; z-index: 10000; transition: opacity 1s ease; padding: 20px; overflow-y: auto; 
     }
 
     #hk-glass-card {
-      position: relative; width: 100%; max-width: 380px; padding: 80px 40px 60px;
+      position: relative; width: 100%; max-width: 380px; padding: 60px 40px 40px;
       background: rgba(255, 255, 255, 0.9); border: 2px solid #fff; border-radius: 45px;
       box-shadow: 0 20px 50px rgba(219, 112, 147, 0.25); text-align: center; animation: floatCard 6s ease-in-out infinite; flex-shrink: 0;
     }
@@ -55,34 +55,62 @@
     @keyframes wiggleBowRight { 0%, 100% { transform: rotate(-5deg) scale(1); } 50% { transform: rotate(5deg) scale(1.1); } }
     @keyframes wiggleBowLeft { 0%, 100% { transform: scaleX(-1) rotate(5deg) scale(1); } 50% { transform: scaleX(-1) rotate(-5deg) scale(1.1); } }
     
-    #hk-glass-card h2 { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 30px; color: #ff1493; margin-bottom: 10px; }
-    #hk-glass-card p { font-size: 15px; color: #885570; margin-bottom: 30px; font-weight: 500; }
+    #hk-glass-card h2 { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 28px; color: #ff1493; margin-bottom: 10px; }
+    #hk-glass-card p { font-size: 14px; color: #885570; margin-bottom: 20px; font-weight: 500; }
     
     /* Şifre Input Stili */
-    #main-pass { width: 100%; padding: 15px 20px; border-radius: 30px; border: 3px solid #ffe0ea; background: #fff; font-family: 'Montserrat', sans-serif; font-size: 16px; font-weight: 600; color: #d6006e; text-align: center; transition: 0.3s; cursor: text; }
+    #main-pass { width: 100%; padding: 12px 20px; border-radius: 30px; border: 3px solid #ffe0ea; background: #fff; font-family: 'Montserrat', sans-serif; font-size: 16px; font-weight: 600; color: #d6006e; text-align: center; transition: 0.3s; cursor: text; }
     #main-pass:focus { border-color: #ff69b4; transform: scale(1.02); outline: none; }
     
-    #start-btn { margin-top: 20px; width: 100%; padding: 15px; border: none; border-radius: 30px; background: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%); color: #fff; font-family: 'Montserrat', sans-serif; font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: 0 10px 20px rgba(255, 20, 147, 0.3); transition: 0.2s; }
+    #start-btn { margin-top: 15px; width: 100%; padding: 12px; border: none; border-radius: 30px; background: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%); color: #fff; font-family: 'Montserrat', sans-serif; font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: 0 10px 20px rgba(255, 20, 147, 0.3); transition: 0.2s; }
     #start-btn:hover { transform: translateY(-3px); }
 
-    /* --- DATE APP TEST KARTI --- */
-    .date-test-card {
-      width: 100%; max-width: 380px; padding: 25px;
+    /* --- IKINCIL KARTLAR (Date App & Oyun) --- */
+    .secondary-card {
+      width: 100%; max-width: 380px; padding: 20px;
       background: #fff; border-radius: 20px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.1); border: 1px solid #eee; text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08); border: 1px solid #eee; text-align: center;
       font-family: 'Montserrat', sans-serif; position: relative; z-index: 10001; flex-shrink: 0;
+      /* Kartlar için yüzme animasyonu */
+      animation: floatCard 6s ease-in-out infinite;
     }
-    .date-test-card h3 { color: #333; margin-bottom: 15px; font-size: 18px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+
+    /* Kartların aynı anda hareket etmemesi için gecikme ekliyoruz */
+    .date-test-card { animation-delay: 0.5s; animation-duration: 5.5s; }
+    .game-card { animation-delay: 1.2s; animation-duration: 7s; }
+
+    .secondary-card h3 { color: #333; margin-bottom: 10px; font-size: 16px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    
     .date-input { 
-      width: 100%; padding: 12px; margin-bottom: 15px; border: 2px solid #f0f0f0; border-radius: 10px; 
+      width: 100%; padding: 10px; margin-bottom: 10px; border: 2px solid #f0f0f0; border-radius: 10px; 
       font-size: 14px; outline: none; transition: 0.3s; background: #fafafa; color: #333; font-family: 'Poppins', sans-serif; text-align: center;
     }
     .date-input:focus { border-color: #ff4757; background: #fff; }
-    .date-btn {
-      width: 100%; padding: 12px; background: #ff4757; color: white; border: none; border-radius: 10px; 
-      font-weight: 700; cursor: pointer; transition: 0.3s; font-size: 14px; text-transform: uppercase;
+
+    /* Buton Nabız Animasyonu */
+    @keyframes btnPulse {
+      0% { transform: scale(1); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+      50% { transform: scale(1.05); box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+      100% { transform: scale(1); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
     }
-    .date-btn:hover { background: #ff6b81; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255, 71, 87, 0.3); }
+
+    .date-btn {
+      width: 100%; padding: 10px; background: #ff4757; color: white; border: none; border-radius: 10px; 
+      font-weight: 700; cursor: pointer; transition: 0.3s; font-size: 13px; text-transform: uppercase;
+      animation: btnPulse 2s infinite ease-in-out; /* Sürekli hareket */
+    }
+    .date-btn:hover { background: #ff6b81; animation: none; transform: translateY(-2px) scale(1.05); }
+
+    /* --- OYUN KARTI (Mor Tema) --- */
+    .game-card h3 { color: #6c5ce7; }
+    .game-input:focus { border-color: #6c5ce7; background: #fff; }
+    
+    .game-btn { 
+      width: 100%; padding: 10px; background: #6c5ce7; color: white; border: none; border-radius: 10px;
+      font-weight: 700; cursor: pointer; transition: 0.3s; font-size: 13px; text-transform: uppercase;
+      animation: btnPulse 2.2s infinite ease-in-out; /* Farklı ritim */
+    }
+    .game-btn:hover { background: #a29bfe; animation: none; transform: translateY(-2px) scale(1.05); box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3); }
 
     /* --- ANA EKRAN KARTLARI (HELLO KITTY) --- */
     #main-content { width: 100%; height: 100vh; display: flex; align-items: center; justify-content: center; opacity: 0; transform: scale(0.95); transition: opacity 1s ease, transform 1s cubic-bezier(0.175, 0.885, 0.32, 1.275); overflow-y: auto; }
@@ -258,11 +286,18 @@
       <p id="login-error" style="color: #ff0000; font-size: 13px; font-weight: 700; margin-top: 10px; display: none;">Hatalı şifre tatlım 🛑</p>
     </div>
 
-    <div class="date-test-card">
+    <div class="secondary-card date-test-card">
         <h3>🔥 Date App Test</h3>
         <input type="password" id="date-pass" class="date-input" placeholder="Şifre">
         <button class="date-btn" onclick="checkDateLogin()">Giriş Testi</button>
         <div id="date-msg" style="margin-top:10px; font-size:12px; color:#888;">*Sadece test amaçlıdır</div>
+    </div>
+
+    <div class="secondary-card game-card">
+        <h3>🎮 Aşk Oyunu</h3>
+        <input type="password" id="game-pass" class="date-input game-input" placeholder="Oyun Şifresi">
+        <button class="date-btn game-btn" onclick="checkGameLogin()">Oyunu Başlat</button>
+        <div id="game-msg" style="margin-top:10px; font-size:12px; color:#888;">*Gizli oyun alanı</div>
     </div>
 
   </div>
@@ -430,6 +465,32 @@
         if(e.key === "Enter") checkDateLogin();
     });
 
+    // --- YENİ: OYUN GİRİŞ KONTROLÜ ---
+    function checkGameLogin() {
+        const passInput = document.getElementById('game-pass');
+        const msg = document.getElementById('game-msg');
+        // Kullanıcı girişini küçük harfe çeviriyoruz
+        const inputVal = passInput.value.trim().toLowerCase();
+
+        // Şifre: "seniseviyorum"
+        if (inputVal === "seniseviyorum") {
+            msg.style.color = "#6c5ce7";
+            msg.textContent = "🎮 Oyun Yükleniyor...";
+            // 1 saniye bekleyip sayfaya gitsin, efekt olsun
+            setTimeout(() => {
+                window.location.href = "oyun.html";
+            }, 800);
+        } else {
+            msg.style.color = "red";
+            msg.textContent = "✖ Hatalı Şifre";
+            passInput.style.borderColor = "red";
+        }
+    }
+
+    document.getElementById('game-pass').addEventListener("keydown", (e) => {
+        if(e.key === "Enter") checkGameLogin();
+    });
+
     /* --- HELLO KITTY İŞLEVLERİ (Aynen Devam) --- */
     const surpriseBtn = document.getElementById("surprise-btn");
     const overlay = document.getElementById("surprise-overlay");
@@ -556,4 +617,3 @@
   </script>
 </body>
 </html>
-
