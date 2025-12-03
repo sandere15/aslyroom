@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
-    <title>Pong - Love Edition</title>
+    <title>Pong - Love Connection</title>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
@@ -26,7 +26,7 @@
             height: 100vh; margin: 0; overflow: hidden; touch-action: none;
         }
 
-        /* --- DİKEY EKRAN UYARISI --- */
+        /* --- ROTATE UYARISI --- */
         #rotateWarning {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; z-index: 9999; flex-direction: column; 
@@ -59,16 +59,16 @@
             letter-spacing: 1px; cursor: pointer; text-transform: uppercase;
             transition: all 0.2s ease; border-radius: 2px;
         }
-        button:hover { transform: scale(1.05); }
+        button:active { transform: scale(0.95); }
         button.secondary { background: transparent; border: 2px solid var(--accent-gold); color: var(--accent-gold); }
 
         input {
             padding: 12px; border: none; background: rgba(0,0,0,0.3); color: #fff;
-            font-family: 'Montserrat', sans-serif; font-size: 0.9rem; text-align: center;
-            width: 100%; box-sizing: border-box; outline: none; letter-spacing: 1px;
+            font-family: 'Montserrat', sans-serif; font-size: 1.2rem; text-align: center;
+            width: 100%; box-sizing: border-box; outline: none; letter-spacing: 2px;
             border-bottom: 2px solid var(--accent-gold); font-weight: 700; margin-bottom: 10px;
         }
-        input::placeholder { color: rgba(255,255,255,0.3); font-weight: 400;}
+        input::placeholder { color: rgba(255,255,255,0.3); font-size: 0.9rem; letter-spacing: 0;}
 
         /* --- OYUN ALANI --- */
         #gameContainer { 
@@ -125,6 +125,7 @@
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         
         .status-msg { font-size: 0.8rem; color: #ff5555; margin-top: 10px; min-height: 20px; }
+        .code-big { font-size: 2.5rem; color: var(--accent-gold); letter-spacing: 5px; font-weight: 900; margin: 10px 0; }
     </style>
 </head>
 <body>
@@ -146,37 +147,32 @@
         
         <div id="menu">
             <div id="step1">
-                <input type="text" id="myNameInput" placeholder="ADINIZI GİRİN" maxlength="10">
+                <input type="text" id="myNameInput" placeholder="İSMİNİZ (Max 10)" maxlength="10">
                 <div class="btn-group">
                     <button onclick="requestFullScreen(); startSinglePlayer();">Antrenman Modu</button>
-                    <button class="secondary" onclick="requestFullScreen(); showHostSetup();">Oda Oluştur</button>
+                    <button class="secondary" onclick="requestFullScreen(); createHostGame();">Oda Kur (Host)</button>
                     <button class="secondary" onclick="requestFullScreen(); showJoinInput();">Odaya Katıl</button>
                 </div>
             </div>
 
-            <div id="stepHostSetup" class="hidden">
-                <p style="color:var(--accent-gold)">ODA İSMİ BELİRLE:</p>
-                <input type="text" id="customRoomInput" placeholder="Örn: seniçokseviyorum" value="senicokseviyorum">
-                <p style="font-size:0.6rem; color:#888;">Türkçe karakter kullanma (ş,ğ,ü yerine s,g,u)</p>
-                <button onclick="createCustomGame()">OLUŞTUR VE BEKLE</button>
-                <button class="secondary" onclick="location.reload()" style="margin-top:10px; font-size:0.8rem;">Geri</button>
-                <div id="hostError" class="status-msg"></div>
-            </div>
-
             <div id="stepHostWait" class="hidden">
-                <p style="color:var(--accent-gold)">ODA KURULDU:</p>
-                <div id="finalRoomName" style="font-size: 1.2rem; font-weight:bold; color:#fff; margin:10px 0;">...</div>
-                <p style="font-size:0.8rem; color:#bbb;">Kız arkadaşın "Odaya Katıl" deyip bu ismi yazsın.</p>
-                <div style="margin-top:20px; font-size: 0.8rem; letter-spacing: 1px; color: var(--accent-gold); animation: pulse 1.5s infinite;">RAKİP BEKLENİYOR...</div>
-                <br><button class="secondary" style="padding:10px; font-size:0.8rem;" onclick="location.reload()">İptal</button>
+                <p style="color:#bbb; font-size:0.9rem;">BU KODU ONA SÖYLE:</p>
+                <div id="hostCodeDisplay" class="code-big">...</div>
+                
+                <div style="margin-top:20px; font-size: 0.8rem; color: var(--accent-gold); animation: pulse 1.5s infinite;">
+                    BAĞLANTI BEKLENİYOR...
+                </div>
+                <div id="hostStatus" class="status-msg"></div>
+                <br>
+                <button class="secondary" style="padding:10px; font-size:0.8rem;" onclick="location.reload()">İptal</button>
             </div>
 
             <div id="stepJoin" class="hidden">
-                <p>Oda İsmini Giriniz:</p>
-                <input type="text" id="joinInput" placeholder="Örn: senicokseviyorum">
+                <p>4 Haneli Kodu Gir:</p>
+                <input type="number" id="joinInput" placeholder="1234" maxlength="4" style="font-size: 2rem;">
                 <button onclick="joinGame()" style="margin-top:15px;">Bağlan</button>
+                <div id="joinStatus" class="status-msg"></div>
                 <button class="secondary" style="margin-top:10px; padding:10px; font-size:0.8rem;" onclick="location.reload()">Geri</button>
-                <div id="joinError" class="status-msg"></div>
             </div>
         </div>
 
@@ -215,10 +211,21 @@
     
     let particles = []; let ballTrail = []; let floatingEmojis = [];
 
+    // --- BAĞLANTI AYARLARI (STUN Server Ekli) ---
+    const peerConfig = {
+        debug: 1,
+        config: {
+            'iceServers': [
+                { url: 'stun:stun.l.google.com:19302' },
+                { url: 'stun:stun1.l.google.com:19302' }
+            ]
+        }
+    };
+
     // --- FULL SCREEN ---
     function requestFullScreen() {
         const elem = document.documentElement;
-        if (elem.requestFullscreen) { elem.requestFullscreen().catch(err => console.log(err)); }
+        if (elem.requestFullscreen) { elem.requestFullscreen().catch(() => {}); }
         else if (elem.webkitRequestFullscreen) { elem.webkitRequestFullscreen(); } 
     }
 
@@ -262,57 +269,48 @@
     window.addEventListener('touchmove', (e) => { if(gameActive) { e.preventDefault(); handleInput(e.touches[0].clientY); } }, { passive: false });
     canvas.addEventListener('mousemove', (e) => handleInput(e.clientY));
 
-    // --- OYUN KURULUMU (CUSTOM ID) ---
+    // --- OYUN KURULUMU ---
     function startSinglePlayer() {
         myName = getName(); opponentName = "CPU"; isSinglePlayer = true; isHost = true;
         updateNameLabels(); startGameUI("ANTRENMAN MODU"); startTimer();
     }
     
-    function showHostSetup() {
+    // --- HOST İŞLEMLERİ ---
+    function createHostGame() {
         myName = getName();
-        document.getElementById('step1').classList.add('hidden');
-        document.getElementById('stepHostSetup').classList.remove('hidden');
-    }
-
-    function createCustomGame() {
-        let roomName = document.getElementById('customRoomInput').value.trim().toLowerCase();
-        // Türkçe karakterleri ve boşlukları temizle
-        roomName = roomName.replace(/\s+/g, '-').replace(/ş/g,'s').replace(/ı/g,'i').replace(/ğ/g,'g').replace(/ü/g,'u').replace(/ö/g,'o').replace(/ç/g,'c');
-        
-        if(roomName.length < 3) {
-            document.getElementById('hostError').innerText = "En az 3 harf giriniz!";
-            return;
-        }
-
-        document.getElementById('hostError').innerText = "Sunucuya bağlanılıyor...";
-        
         isHost = true; isSinglePlayer = false;
         
-        // ÖZEL ID İLE PEER BAŞLATMA
-        peer = new Peer(roomName, { debug: 2 });
-        
+        // Rastgele 4 haneli kod üret (1000 - 9999)
+        const randomCode = Math.floor(Math.random() * 9000) + 1000;
+        const fullPeerID = "pong-love-" + randomCode;
+
+        document.getElementById('step1').classList.add('hidden');
+        document.getElementById('stepHostWait').classList.remove('hidden');
+        document.getElementById('hostCodeDisplay').innerText = randomCode; // Ekranda sadece sayı göster
+        document.getElementById('hostStatus').innerText = "Sunucu başlatılıyor...";
+
+        peer = new Peer(fullPeerID, peerConfig);
+
         peer.on('open', (id) => {
-            // Başarılı olursa
-            document.getElementById('stepHostSetup').classList.add('hidden');
-            document.getElementById('stepHostWait').classList.remove('hidden');
-            document.getElementById('finalRoomName').innerText = id;
-            document.getElementById('hostError').innerText = "";
+            document.getElementById('hostStatus').innerText = "Hazır! Bekleniyor...";
         });
 
         peer.on('error', (err) => {
             console.error(err);
+            document.getElementById('hostStatus').innerText = "Hata: " + err.type;
             if(err.type === 'unavailable-id') {
-                document.getElementById('hostError').innerText = "Bu isim kullanımda! Başka bir şey dene.";
-            } else if(err.type === 'peer-unavailable') {
-                 document.getElementById('hostError').innerText = "Bağlantı hatası.";
-            } else {
-                document.getElementById('hostError').innerText = "Bağlantı hatası: " + err.type;
+                // Çok nadir de olsa çakışırsa yeni kod dene
+                createHostGame();
             }
         });
 
-        peer.on('connection', (c) => { conn = c; setupConnection(); });
+        peer.on('connection', (c) => { 
+            conn = c; 
+            setupConnection(); 
+        });
     }
-    
+
+    // --- GUEST İŞLEMLERİ ---
     function showJoinInput() { 
         myName = getName(); 
         document.getElementById('step1').classList.add('hidden'); 
@@ -320,56 +318,61 @@
     }
 
     function joinGame() { 
-        let destId = document.getElementById('joinInput').value.trim().toLowerCase();
-        destId = destId.replace(/\s+/g, '-').replace(/ş/g,'s').replace(/ı/g,'i').replace(/ğ/g,'g').replace(/ü/g,'u').replace(/ö/g,'o').replace(/ç/g,'c');
+        const inputCode = document.getElementById('joinInput').value.trim();
+        if(inputCode.length !== 4) {
+            document.getElementById('joinStatus').innerText = "Lütfen 4 haneli kodu giriniz.";
+            return;
+        }
 
-        if(!destId) return;
+        const fullDestID = "pong-love-" + inputCode;
+        document.getElementById('joinStatus').innerText = "Bağlanılıyor...";
         
-        document.getElementById('joinError').innerText = "Aranıyor...";
-        
-        peer = new Peer(null, { debug: 2 }); // Client rastgele ID alabilir
+        peer = new Peer(null, peerConfig);
         
         peer.on('open', (id) => {
-            conn = peer.connect(destId);
+            conn = peer.connect(fullDestID);
             isHost = false; isSinglePlayer = false;
             
             conn.on('open', () => {
                 setupConnection();
             });
             
-            // Eğer 5 saniye içinde bağlanamazsa hata ver
+            // Timeout kontrolü
             setTimeout(() => {
                 if(!conn || !conn.open) {
-                    document.getElementById('joinError').innerText = "Oda bulunamadı veya bağlantı hatası.";
+                    document.getElementById('joinStatus').innerText = "Bağlanamadı. Kod doğru mu?";
                 }
             }, 5000);
         });
 
         peer.on('error', (err) => {
-             document.getElementById('joinError').innerText = "Hata: " + err.type;
+             document.getElementById('joinStatus').innerText = "Hata: " + err.type;
         });
     }
 
     function setupConnection() {
         conn.on('open', () => {
+            // İsim değiş tokuşu
             conn.send({ type: 'INFO', name: myName });
+            
             if(!isHost) startGameUI("BAĞLANDI"); else startTimer();
+            
             conn.on('data', (data) => { handleDataPacket(data); });
         });
-        conn.on('close', () => { alert("Bağlantı koptu."); location.reload(); });
         
-        // Hata mesajlarını temizle ve geç
-        if(isHost) {
-             document.getElementById('stepHostWait').classList.add('hidden');
-        } else {
-             document.getElementById('stepJoin').classList.add('hidden');
-        }
+        conn.on('close', () => { 
+            alert("Bağlantı koptu."); location.reload(); 
+        });
+        
+        // Arayüz temizliği
+        document.getElementById('stepHostWait').classList.add('hidden');
+        document.getElementById('stepJoin').classList.add('hidden');
     }
 
     function handleDataPacket(data) {
         if (data.type === 'INFO') {
             opponentName = data.name; updateNameLabels();
-            if(isHost) { conn.send({ type: 'INFO', name: myName }); startGameUI(opponentName + " GELDİ"); }
+            if(isHost) { conn.send({ type: 'INFO', name: myName }); startGameUI(opponentName + " BAĞLANDI"); }
         } else if (data.type === 'MOVE') { if(isHost) gameState.p2Y = data.val; }
         else if (data.type === 'EMOJI') { spawnFlyingText(data.emoji, false); }
         else if (data.gameOverCmd) { endGame(data.winner); } 
@@ -501,13 +504,6 @@
     function drawGlowRect(x,y,w,h,c) { ctx.shadowBlur=20; ctx.shadowColor=c; ctx.fillStyle=c; ctx.fillRect(x,y,w,h); ctx.shadowBlur=0; }
     function drawGlowCircle(x,y,r,c) { ctx.shadowBlur=15; ctx.shadowColor=c; ctx.fillStyle=c; ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill(); ctx.shadowBlur=0; }
     
-    function copyCode() {
-        const text = document.getElementById('myIdDisplay').innerText;
-        navigator.clipboard.writeText(text).then(() => {
-            document.getElementById('myIdDisplay').style.color = "#fff";
-            setTimeout(() => { document.getElementById('myIdDisplay').style.color = GOLD; }, 500);
-        });
-    }
     const style = document.createElement('style');
     style.innerHTML = `@keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }`;
     document.head.appendChild(style);
