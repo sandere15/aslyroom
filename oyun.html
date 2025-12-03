@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>Pong - Love Edition</title>
+    <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #121212;
+            --accent-gold: #D4AF37;
+            --accent-bordo: #9B1B30;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --text-main: #ffffff;
+        }
+
+        body {
+            background: radial-gradient(circle at center, #2b1a1a 0%, #0a0505 100%);
+            color: var(--text-main);
+            font-family: 'Montserrat', sans-serif;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 100vh; margin: 0; overflow: hidden; touch-action: none;
+        }
+
+        h1 {
+            font-weight: 900; letter-spacing: 3px; font-size: 1.5rem; text-transform: uppercase;
+            margin-bottom: 5px;
+            background: linear-gradient(to right, var(--accent-gold), var(--accent-bordo));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        #timerDisplay {
+            font-weight: 700; font-size: 2rem; color: rgba(255,255,255,0.9);
+            margin-bottom: 15px; font-variant-numeric: tabular-nums;
+            text-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+        }
+
+        /* --- MENÜ --- */
+        #menu {
+            width: 85%; max-width: 380px; text-align: center; background: var(--glass-bg);
+            padding: 25px; border-radius: 4px; border: 1px solid var(--border-color);
+            backdrop-filter: blur(20px); box-shadow: 0 30px 60px rgba(0,0,0,0.6); z-index: 10;
+        }
+
+        .btn-group { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+        
+        button {
+            background: var(--accent-gold); color: #000; border: none; padding: 15px;
+            font-size: 0.9rem; font-family: 'Montserrat', sans-serif; font-weight: 700;
+            letter-spacing: 1px; cursor: pointer; text-transform: uppercase;
+            transition: all 0.2s ease; border-radius: 2px;
+        }
+        button:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(212, 175, 55, 0.3); }
+        button.secondary { background: transparent; border: 2px solid var(--accent-gold); color: var(--accent-gold); }
+        button.secondary:hover { background: var(--accent-gold); color: #000; }
+
+        input {
+            padding: 12px; border: none; background: rgba(0,0,0,0.3); color: #fff;
+            font-family: 'Montserrat', sans-serif; font-size: 0.9rem; text-align: center;
+            width: 100%; box-sizing: border-box; outline: none; letter-spacing: 1px;
+            border-bottom: 2px solid var(--accent-gold); font-weight: 700; margin-bottom: 10px;
+        }
+        input::placeholder { color: rgba(255,255,255,0.3); font-weight: 400;}
+
+        /* --- OYUN ALANI --- */
+        #gameContainer { display: none; width: 95%; max-width: 900px; position: relative; }
+        canvas {
+            background: rgba(20, 10, 10, 0.8); border: 1px solid var(--border-color);
+            display: block; width: 100%; height: auto; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            border-radius: 4px;
+        }
+        .player-labels {
+            display: flex; justify-content: space-between; width: 100%; margin-top: 10px;
+            font-size: 1rem; letter-spacing: 1px; text-transform: uppercase; font-weight: 700;
+        }
+        .code-display {
+            font-family: 'Courier New', monospace; font-size: 1.1rem; color: var(--accent-gold);
+            margin: 15px 0; cursor: pointer; background: rgba(0,0,0,0.4); padding: 15px;
+            border: 1px dashed var(--accent-gold); word-break: break-all; font-weight: 700;
+        }
+        .hidden { display: none !important; }
+
+        /* --- EMOJI --- */
+        #emojiBar {
+            position: absolute; bottom: -70px; width: 100%; display: flex; justify-content: center;
+        }
+        .emoji-btn {
+            background: rgba(155, 27, 48, 0.3) !important; padding: 10px !important; font-size: 1.5rem !important;
+            width: 60px !important; height: 60px !important; border-radius: 50% !important; 
+            border: 2px solid var(--accent-bordo) !important; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; box-shadow: 0 0 15px rgba(155, 27, 48, 0.5);
+            animation: pulseHeart 2s infinite;
+        }
+        .emoji-btn:active { transform: scale(0.9); }
+        
+        @keyframes pulseHeart {
+            0% { transform: scale(1); box-shadow: 0 0 15px rgba(155, 27, 48, 0.5); }
+            50% { transform: scale(1.1); box-shadow: 0 0 25px rgba(155, 27, 48, 0.8); }
+            100% { transform: scale(1); box-shadow: 0 0 15px rgba(155, 27, 48, 0.5); }
+        }
+
+        /* --- KAZANAN EKRANI --- */
+        #winnerModal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(10, 5, 5, 0.98); z-index: 999; flex-direction: column;
+            align-items: center; justify-content: center; text-align: center; animation: fadeIn 0.8s ease;
+        }
+        .trophy-icon { font-size: 80px; color: var(--accent-gold); margin-bottom: 20px; filter: drop-shadow(0 0 30px var(--accent-gold)); }
+        .winner-name { 
+            font-size: 3rem; font-weight: 900; 
+            background: linear-gradient(to right, var(--accent-gold), var(--accent-bordo)); 
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
+            margin-bottom: 30px; text-transform: uppercase; 
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <div id="winnerModal">
+        <div class="trophy-icon">♛</div>
+        <div style="font-weight:300; color:#bbb; letter-spacing: 3px; font-size: 0.8rem;">KAZANAN</div>
+        <div id="winnerNameDisplay" class="winner-name">İSİM</div>
+        <button style="width: 200px;" onclick="location.reload()">TEKRAR OYNA</button>
+    </div>
+
+    <h1>Couple Pong</h1>
+    <div id="timerDisplay" class="hidden">1:30</div>
+
+    <div id="menu">
+        <div id="step1">
+            <input type="text" id="myNameInput" placeholder="ADINIZI GİRİN" maxlength="10">
+            <div class="btn-group">
+                <button onclick="requestFullScreen(); startSinglePlayer();">Antrenman Modu</button>
+                <button class="secondary" onclick="requestFullScreen(); createGame();">Oda Oluştur</button>
+                <button class="secondary" onclick="requestFullScreen(); showJoinInput();">Odaya Katıl</button>
+            </div>
+        </div>
+
+        <div id="stepHost" class="hidden">
+            <p style="color:var(--accent-gold)">DAVET KODUNUZ:</p>
+            <div id="myIdDisplay" class="code-display" onclick="copyCode()">OLUŞTURULUYOR...</div>
+            <div style="margin-top:20px; font-size: 0.8rem; letter-spacing: 1px; color: #bbb; animation: pulse 1.5s infinite;">RAKİP BEKLENİYOR...</div>
+            <br><button class="secondary" style="padding:10px; font-size:0.8rem;" onclick="location.reload()">İptal</button>
+        </div>
+
+        <div id="stepJoin" class="hidden">
+            <p>Rakibinizin kodunu giriniz:</p>
+            <input type="text" id="joinInput" placeholder="KODU YAPIŞTIR">
+            <button onclick="joinGame()" style="margin-top:15px;">Bağlan</button>
+            <button class="secondary" style="margin-top:10px; padding:10px; font-size:0.8rem;" onclick="location.reload()">Geri</button>
+        </div>
+    </div>
+
+    <div id="gameContainer">
+        <canvas id="gameCanvas" width="800" height="500"></canvas>
+        <div class="player-labels">
+            <span style="color: var(--accent-gold)" id="p1Label">P1</span>
+            <span style="color: var(--accent-bordo)" id="p2Label">P2</span>
+        </div>
+        
+        <div id="emojiBar">
+            <div class="emoji-btn" onclick="sendLove()">❤️</div>
+        </div>
+    </div>
+    <p id="status" style="margin-top:70px; color:#666; font-size:0.8rem; letter-spacing:1px;"></p>
+
+<script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const timerDisplay = document.getElementById('timerDisplay');
+    
+    const GAME_WIDTH = 800; const GAME_HEIGHT = 500; const GAME_DURATION = 90;
+    const GOLD = '#D4AF37'; const BORDO = '#9B1B30';
+
+    let gameState = {
+        ballX: GAME_WIDTH/2, ballY: GAME_HEIGHT/2, ballSpeedX: 5, ballSpeedY: 5,
+        p1Y: 200, p2Y: 200, score1: 0, score2: 0, timeLeft: GAME_DURATION, isGameOver: false
+    };
+
+    const PADDLE_HEIGHT = 100; const PADDLE_WIDTH = 14;
+    let myName="HOST", opponentName="GUEST", isSinglePlayer=false, isHost=false, gameActive=false;
+    let peer=null, conn=null, timerInterval=null;
+    
+    let particles = [];
+    let ballTrail = [];
+    let floatingEmojis = [];
+
+    // --- FULL SCREEN ---
+    function requestFullScreen() {
+        var elem = document.documentElement;
+        if (elem.requestFullscreen) { elem.requestFullscreen(); }
+        else if (elem.webkitRequestFullscreen) { elem.webkitRequestFullscreen(); } 
+        else if (elem.msRequestFullscreen) { elem.msRequestFullscreen(); } 
+    }
+
+    // --- EFEKTLER ---
+    function createParticles(x, y, color) {
+        for (let i = 0; i < 15; i++) {
+            particles.push({
+                x: x, y: y,
+                vx: (Math.random() - 0.5) * 10, vy: (Math.random() - 0.5) * 10,
+                life: 1.0, color: color
+            });
+        }
+    }
+    
+    function sendLove() {
+        const msg = "❤️ SENİ SEVİYORUM";
+        spawnFlyingText(msg, true);
+        if(conn && conn.open) conn.send({ type: 'EMOJI', emoji: msg });
+    }
+
+    function spawnFlyingText(text, isMine) {
+        // Yazı geniş olduğu için kenarlardan taşmasın diye X konumunu içeri çekiyoruz
+        let startX = isMine ? (isHost ? 120 : GAME_WIDTH - 120) : (isHost ? GAME_WIDTH - 120 : 120);
+        let startY = isMine ? (isHost ? gameState.p1Y : gameState.p2Y) : (isHost ? gameState.p2Y : gameState.p1Y);
+        startY += PADDLE_HEIGHT/2;
+        floatingEmojis.push({ x: startX, y: startY, text: text, life: 1.5, vy: -1.5 });
+    }
+
+    // --- INPUT & MANTIK ---
+    function getName() { const n = document.getElementById('myNameInput').value.trim(); return n.length>0 ? n.toUpperCase() : "OYUNCU"; }
+    
+    function handleInput(clientY) {
+        if (gameState.isGameOver) return;
+        let rect = canvas.getBoundingClientRect(); let scaleY = GAME_HEIGHT / rect.height; let relativeY = (clientY - rect.top) * scaleY;
+        if(relativeY < PADDLE_HEIGHT/2) relativeY = PADDLE_HEIGHT/2; if(relativeY > GAME_HEIGHT - PADDLE_HEIGHT/2) relativeY = GAME_HEIGHT - PADDLE_HEIGHT/2;
+        if (isHost || isSinglePlayer) gameState.p1Y = relativeY - PADDLE_HEIGHT/2;
+        else if(conn && conn.open) conn.send({ type: 'MOVE', val: relativeY - PADDLE_HEIGHT/2 });
+    }
+    canvas.addEventListener('mousemove', (e) => handleInput(e.clientY));
+    canvas.addEventListener('touchmove', (e) => { e.preventDefault(); handleInput(e.touches[0].clientY); }, { passive: false });
+
+    // --- MODLAR ---
+    function startSinglePlayer() {
+        myName = getName(); opponentName = "CPU"; isSinglePlayer = true; isHost = true;
+        updateNameLabels(); startGameUI("ANTRENMAN MODU BAŞLADI"); startTimer();
+    }
+    
+    function createGame() {
+        myName = getName(); isHost = true; isSinglePlayer = false; initPeer(); 
+        document.getElementById('step1').classList.add('hidden'); 
+        document.getElementById('stepHost').classList.remove('hidden'); 
+    }
+    
+    function initPeer() {
+        peer = new Peer(null, { debug: 1 });
+        peer.on('open', (id) => { if(document.getElementById('myIdDisplay')) document.getElementById('myIdDisplay').innerText = id; });
+        peer.on('connection', (c) => { conn = c; setupConnection(); });
+    }
+    
+    function showJoinInput() { myName = getName(); document.getElementById('step1').classList.add('hidden'); document.getElementById('stepJoin').classList.remove('hidden'); peer = new Peer(null, { debug: 1 }); }
+    function joinGame() { const destId = document.getElementById('joinInput').value; if(!destId) return alert("Kod giriniz."); conn = peer.connect(destId); isHost = false; isSinglePlayer = false; setupConnection(); }
+
+    function setupConnection() {
+        conn.on('open', () => {
+            conn.send({ type: 'INFO', name: myName });
+            if(!isHost) startGameUI("BAĞLANTI KURULDU"); else startTimer();
+            conn.on('data', (data) => { handleDataPacket(data); });
+        });
+        conn.on('close', () => { alert("Bağlantı kesildi."); location.reload(); });
+    }
+
+    function handleDataPacket(data) {
+        if (data.type === 'INFO') {
+            opponentName = data.name; updateNameLabels();
+            if(isHost) { conn.send({ type: 'INFO', name: myName }); startGameUI(opponentName + " BAĞLANDI"); }
+        } else if (data.type === 'MOVE') { if(isHost) gameState.p2Y = data.val; }
+        else if (data.type === 'EMOJI') { spawnFlyingText(data.emoji, false); }
+        else if (data.gameOverCmd) { endGame(data.winner); } 
+        else if (!isHost && data.ballX !== undefined) { gameState = data; updateTimerDisplay(); }
+    }
+    
+    function updateNameLabels() {
+        document.getElementById('p1Label').innerText = (isHost || isSinglePlayer) ? myName : opponentName;
+        document.getElementById('p2Label').innerText = (isHost || isSinglePlayer) ? opponentName : myName;
+    }
+    function startGameUI(msg) {
+        document.getElementById('menu').style.display = 'none'; document.getElementById('gameContainer').style.display = 'block';
+        document.getElementById('status').innerText = msg; timerDisplay.classList.remove('hidden'); updateNameLabels(); gameActive = true; requestAnimationFrame(gameLoop);
+    }
+    function startTimer() {
+        if (!isHost) return;
+        timerInterval = setInterval(() => { if (gameState.timeLeft > 0) gameState.timeLeft--; else finishGame(); }, 1000);
+    }
+    function updateTimerDisplay() {
+        let m = Math.floor(gameState.timeLeft / 60); let s = gameState.timeLeft % 60;
+        timerDisplay.innerText = `${m}:${s<10?'0':''}${s}`;
+        timerDisplay.style.color = gameState.timeLeft <= 10 ? GOLD : "rgba(255,255,255,0.9)";
+    }
+    function finishGame() {
+        clearInterval(timerInterval); gameState.isGameOver = true;
+        let winner = gameState.score1 > gameState.score2 ? "p1" : (gameState.score2 > gameState.score1 ? "p2" : "DRAW");
+        endGame(winner); if (!isSinglePlayer && conn && conn.open) conn.send({ gameOverCmd: true, winner: winner });
+    }
+    function endGame(w) {
+        gameActive = false;
+        document.getElementById('winnerModal').style.display = 'flex';
+        let winName = (w==="p1" ? ((isHost||isSinglePlayer)?myName:opponentName) : (w==="p2" ? ((isHost||isSinglePlayer)?opponentName:myName) : "BERABERE"));
+        document.getElementById('winnerNameDisplay').innerText = winName;
+        document.getElementById('emojiBar').style.display = 'none';
+    }
+
+    // --- RENDER ---
+    function gameLoop() {
+        if (!gameActive) return;
+        if (isHost) { updatePhysics(); if(!isSinglePlayer && conn && conn.open) conn.send(gameState); updateTimerDisplay(); }
+        draw(); requestAnimationFrame(gameLoop);
+    }
+
+    function updatePhysics() {
+        if (gameState.isGameOver) return;
+        
+        ballTrail.push({x: gameState.ballX, y: gameState.ballY, opacity: 0.8});
+        if(ballTrail.length > 10) ballTrail.shift();
+
+        gameState.ballX += gameState.ballSpeedX; gameState.ballY += gameState.ballSpeedY;
+
+        if (isSinglePlayer) {
+            let botCenter = gameState.p2Y + PADDLE_HEIGHT/2;
+            if (botCenter < gameState.ballY - 40) gameState.p2Y += 6; else if (botCenter > gameState.ballY + 40) gameState.p2Y -= 6;
+            gameState.p2Y = Math.max(0, Math.min(GAME_HEIGHT - PADDLE_HEIGHT, gameState.p2Y));
+        }
+
+        if (gameState.ballY < 0 || gameState.ballY > GAME_HEIGHT) { gameState.ballSpeedY = -gameState.ballSpeedY; }
+
+        if (gameState.ballX < PADDLE_WIDTH + 10) {
+            if (gameState.ballY > gameState.p1Y && gameState.ballY < gameState.p1Y + PADDLE_HEIGHT) {
+                gameState.ballSpeedX = Math.abs(gameState.ballSpeedX);
+                gameState.ballSpeedY = (gameState.ballY - (gameState.p1Y + PADDLE_HEIGHT/2)) * 0.35;
+                createParticles(gameState.ballX, gameState.ballY, GOLD);
+            } else if (gameState.ballX < -20) { gameState.score2++; resetBall(); }
+        }
+        
+        if (gameState.ballX > GAME_WIDTH - PADDLE_WIDTH - 10) {
+            if (gameState.ballY > gameState.p2Y && gameState.ballY < gameState.p2Y + PADDLE_HEIGHT) {
+                gameState.ballSpeedX = -Math.abs(gameState.ballSpeedX);
+                gameState.ballSpeedY = (gameState.ballY - (gameState.p2Y + PADDLE_HEIGHT/2)) * 0.35;
+                createParticles(gameState.ballX, gameState.ballY, BORDO);
+            } else if (gameState.ballX > GAME_WIDTH + 20) { gameState.score1++; resetBall(); }
+        }
+    }
+    function resetBall() {
+        ballTrail = [];
+        gameState.ballX = GAME_WIDTH/2; gameState.ballY = GAME_HEIGHT/2;
+        gameState.ballSpeedX = (Math.random()>0.5?1:-1)*(5+Math.random()); gameState.ballSpeedY = (Math.random()*6)-3;
+    }
+
+    function draw() {
+        ctx.fillStyle = '#121212'; ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+        
+        ctx.font = "900 100px 'Montserrat'"; ctx.textAlign = "center";
+        ctx.fillStyle = 'rgba(212, 175, 55, 0.15)'; ctx.fillText(gameState.score1, GAME_WIDTH/4, GAME_HEIGHT/2+35);
+        ctx.fillStyle = 'rgba(155, 27, 48, 0.15)'; ctx.fillText(gameState.score2, 3*GAME_WIDTH/4, GAME_HEIGHT/2+35);
+
+        ctx.strokeStyle = 'rgba(255,255,255,0.08)'; ctx.lineWidth = 2; ctx.beginPath();
+        ctx.moveTo(GAME_WIDTH/2,0); ctx.lineTo(GAME_WIDTH/2,GAME_HEIGHT); ctx.stroke();
+
+        drawGlowRect(10, gameState.p1Y, PADDLE_WIDTH, PADDLE_HEIGHT, GOLD);
+        drawGlowRect(GAME_WIDTH - PADDLE_WIDTH - 10, gameState.p2Y, PADDLE_WIDTH, PADDLE_HEIGHT, BORDO);
+
+        ballTrail.forEach(t => { ctx.fillStyle = `rgba(255,255,255,${t.opacity*=0.85})`; ctx.beginPath(); ctx.arc(t.x, t.y, 5, 0, Math.PI*2); ctx.fill(); });
+        drawGlowCircle(gameState.ballX, gameState.ballY, 7, '#fff');
+
+        particles.forEach((p,i) => {
+            p.x += p.vx; p.y += p.vy; p.life -= 0.03;
+            ctx.fillStyle = p.color; ctx.globalAlpha = p.life;
+            ctx.beginPath(); ctx.arc(p.x, p.y, 3, 0, Math.PI*2); ctx.fill();
+            if(p.life <= 0) particles.splice(i,1);
+        });
+        ctx.globalAlpha = 1;
+        
+        // Emojileri / Yazıları Çiz
+        floatingEmojis.forEach((e,i) => {
+            e.y += e.vy; e.life -= 0.015;
+            // Fontu biraz daha zarif ve okunaklı yapalım
+            ctx.font = "bold 20px 'Montserrat'"; 
+            ctx.fillStyle = "#ffcccc"; // Hafif pembe-beyaz
+            ctx.textAlign = "center";
+            ctx.shadowColor = "#9B1B30"; ctx.shadowBlur = 10;
+            ctx.globalAlpha = e.life;
+            ctx.fillText(e.text, e.x, e.y);
+            if(e.life <= 0) floatingEmojis.splice(i,1);
+        });
+        // Shadow reset
+        ctx.shadowBlur = 0;
+        ctx.globalAlpha = 1;
+    }
+
+    function drawGlowRect(x,y,w,h,c) { ctx.shadowBlur=20; ctx.shadowColor=c; ctx.fillStyle=c; ctx.fillRect(x,y,w,h); ctx.shadowBlur=0; }
+    function drawGlowCircle(x,y,r,c) { ctx.shadowBlur=15; ctx.shadowColor=c; ctx.fillStyle=c; ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill(); ctx.shadowBlur=0; }
+    
+    function copyCode() {
+        const text = document.getElementById('myIdDisplay').innerText;
+        navigator.clipboard.writeText(text).then(() => {
+            document.getElementById('myIdDisplay').style.color = "#fff";
+            setTimeout(() => { document.getElementById('myIdDisplay').style.color = GOLD; }, 500);
+        });
+    }
+    const style = document.createElement('style');
+    style.innerHTML = `@keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }`;
+    document.head.appendChild(style);
+</script>
+</body>
+</html>
