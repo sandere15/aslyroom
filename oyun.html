@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
-    <title>Pong - Scroll Fix</title>
+    <title>Pong - Strong Connection</title>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
@@ -18,24 +18,16 @@
             --text-main: #ffffff;
         }
 
-        /* --- BODY AYARLARI (GÜNCELLENDİ) --- */
-        /* Artık overflow: hidden yok, menüde aşağı inebil diye */
+        /* --- TEMEL AYARLAR --- */
         body {
             background: radial-gradient(circle at center, #2b1a1a 0%, #0a0505 100%);
             color: var(--text-main);
             font-family: 'Montserrat', sans-serif;
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center;
-            min-height: 100vh; /* height yerine min-height */
-            margin: 0; 
-            padding: 20px; /* Kenarlardan boşluk */
-            box-sizing: border-box;
-            /* touch-action burada değil, sadece oyunda kapatacağız */
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box;
         }
 
-        /* Sadece dikey modda (Portrait) uyarıyı göster */
+        /* --- ROTATE UYARISI --- */
         #rotateWarning {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; z-index: 9999; flex-direction: column; 
@@ -48,25 +40,17 @@
 
         h1 {
             font-weight: 900; letter-spacing: 3px; font-size: 1.5rem; text-transform: uppercase;
-            margin-bottom: 5px;
+            margin-bottom: 5px; text-align: center;
             background: linear-gradient(to right, var(--accent-gold), var(--accent-bordo));
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            text-align: center;
         }
 
         /* --- MENÜ --- */
         #menu {
-            width: 100%; 
-            max-width: 400px; 
-            text-align: center; 
-            background: var(--glass-bg);
-            padding: 20px; 
-            border-radius: 8px; 
-            border: 1px solid var(--border-color);
-            backdrop-filter: blur(20px); 
-            box-shadow: 0 30px 60px rgba(0,0,0,0.6); 
-            z-index: 10;
-            margin-bottom: 50px; /* Klavye açılınca pay kalsın */
+            width: 100%; max-width: 400px; text-align: center; background: var(--glass-bg);
+            padding: 20px; border-radius: 8px; border: 1px solid var(--border-color);
+            backdrop-filter: blur(20px); box-shadow: 0 30px 60px rgba(0,0,0,0.6); z-index: 10;
+            margin-bottom: 50px;
         }
 
         .btn-group { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
@@ -86,21 +70,12 @@
             width: 100%; box-sizing: border-box; outline: none; letter-spacing: 2px;
             border-bottom: 2px solid var(--accent-gold); font-weight: 700; margin-bottom: 10px;
         }
-        input::placeholder { color: rgba(255,255,255,0.3); font-size: 0.8rem; letter-spacing: 0;}
 
-        /* --- OYUN ALANI (SABİT) --- */
-        /* Oyun başlayınca burası tüm ekranı kaplar ve kaydırmayı engeller */
+        /* --- OYUN ALANI --- */
         #gameContainer { 
-            display: none; 
-            position: fixed; /* Sayfadan bağımsız */
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: #121212;
-            width: 100vw; 
-            height: 100vh; 
-            align-items: center; 
-            justify-content: center;
-            z-index: 100;
-            touch-action: none; /* SADECE BURADA KAYDIRMAYI ENGELLİYORUZ */
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: #121212; width: 100vw; height: 100vh; 
+            align-items: center; justify-content: center; z-index: 100; touch-action: none;
         }
         
         canvas {
@@ -125,7 +100,6 @@
             animation: pulseHeart 2s infinite; user-select: none;
         }
         .emoji-btn:active { transform: scale(0.9); background: rgba(155, 27, 48, 0.8) !important; }
-        
         @keyframes pulseHeart {
             0% { transform: scale(1); box-shadow: 0 0 15px rgba(155, 27, 48, 0.5); }
             50% { transform: scale(1.1); box-shadow: 0 0 25px rgba(155, 27, 48, 0.8); }
@@ -153,7 +127,7 @@
         }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         
-        .status-msg { font-size: 0.8rem; color: #ff5555; margin-top: 10px; min-height: 20px; }
+        .status-msg { font-size: 0.7rem; color: #ffab40; margin-top: 10px; min-height: 20px; font-weight: bold;}
         .code-big { font-size: 2.5rem; color: var(--accent-gold); letter-spacing: 5px; font-weight: 900; margin: 10px 0; }
     </style>
 </head>
@@ -189,9 +163,9 @@
                 <div id="hostCodeDisplay" class="code-big">...</div>
                 
                 <div style="margin-top:20px; font-size: 0.8rem; color: var(--accent-gold); animation: pulse 1.5s infinite;">
-                    BAĞLANTI BEKLENİYOR...
+                    RAKİP ARANIYOR...
                 </div>
-                <div id="hostStatus" class="status-msg"></div>
+                <div id="hostStatus" class="status-msg">Sunucuya bağlanılıyor...</div>
                 <br>
                 <button class="secondary" style="padding:10px; font-size:0.8rem;" onclick="location.reload()">İptal</button>
             </div>
@@ -240,13 +214,17 @@
     
     let particles = []; let ballTrail = []; let floatingEmojis = [];
 
-    // --- PEER CONFIG ---
+    // --- SÜPER GÜÇLÜ BAĞLANTI AYARLARI (STUN/TURN) ---
+    // Farklı internetlerde çalışması için Google ve Twilio sunucuları
     const peerConfig = {
         debug: 1,
         config: {
-            'iceServers': [
-                { url: 'stun:stun.l.google.com:19302' },
-                { url: 'stun:stun1.l.google.com:19302' }
+            iceServers: [
+                { urls: 'stun:stun.l.google.com:19302' },
+                { urls: 'stun:stun1.l.google.com:19302' },
+                { urls: 'stun:stun2.l.google.com:19302' },
+                { urls: 'stun:stun3.l.google.com:19302' },
+                { urls: 'stun:global.stun.twilio.com:3478' }
             ]
         }
     };
@@ -311,28 +289,39 @@
         updateNameLabels(); startGameUI("ANTRENMAN MODU"); startTimer();
     }
     
+    // --- HOST İŞLEMLERİ ---
     function createHostGame() {
         myName = getName(); isHost = true; isSinglePlayer = false;
         
         const randomCode = Math.floor(Math.random() * 9000) + 1000;
-        const fullPeerID = "pong-love-" + randomCode;
+        const fullPeerID = "pong-ultimate-" + randomCode;
 
         document.getElementById('step1').classList.add('hidden');
         document.getElementById('stepHostWait').classList.remove('hidden');
-        document.getElementById('hostCodeDisplay').innerText = randomCode;
-        document.getElementById('hostStatus').innerText = "Sunucu başlatılıyor...";
+        document.getElementById('hostCodeDisplay').innerText = randomCode; 
+        document.getElementById('hostStatus').innerText = "Sunucuya bağlanılıyor (Bekle)...";
 
         peer = new Peer(fullPeerID, peerConfig);
 
-        peer.on('open', (id) => { document.getElementById('hostStatus').innerText = "Hazır! Bekleniyor..."; });
-        peer.on('error', (err) => { 
-            console.error(err); 
-            document.getElementById('hostStatus').innerText = "Hata (Yenile): " + err.type; 
-            if(err.type==='unavailable-id') createHostGame();
+        peer.on('open', (id) => {
+            document.getElementById('hostStatus').innerText = "Oda Hazır! Kod gönderiliyor...";
+            document.getElementById('hostCodeDisplay').style.color = GOLD;
         });
-        peer.on('connection', (c) => { conn = c; setupConnection(); });
+
+        peer.on('error', (err) => {
+            console.error(err);
+            document.getElementById('hostStatus').innerText = "Hata: " + err.type + ". Yeniden dene.";
+            if(err.type === 'unavailable-id') { setTimeout(() => createHostGame(), 1000); }
+        });
+
+        peer.on('connection', (c) => { 
+            conn = c; 
+            document.getElementById('hostStatus').innerText = "Biri bağlanmaya çalışıyor...";
+            setupConnection(); 
+        });
     }
 
+    // --- GUEST İŞLEMLERİ ---
     function showJoinInput() { 
         myName = getName(); 
         document.getElementById('step1').classList.add('hidden'); 
@@ -343,18 +332,29 @@
         const inputCode = document.getElementById('joinInput').value.trim();
         if(inputCode.length !== 4) { document.getElementById('joinStatus').innerText = "4 hane giriniz."; return; }
 
-        const fullDestID = "pong-love-" + inputCode;
-        document.getElementById('joinStatus').innerText = "Aranıyor...";
+        const fullDestID = "pong-ultimate-" + inputCode;
+        document.getElementById('joinStatus').innerText = "Sunucuya bağlanılıyor...";
         
         peer = new Peer(null, peerConfig);
         
         peer.on('open', (id) => {
+            document.getElementById('joinStatus').innerText = "Oda aranıyor: " + inputCode;
             conn = peer.connect(fullDestID);
             isHost = false; isSinglePlayer = false;
             
-            conn.on('open', () => { setupConnection(); });
-            setTimeout(() => { if(!conn || !conn.open) document.getElementById('joinStatus').innerText = "Bulunamadı."; }, 5000);
+            conn.on('open', () => { 
+                document.getElementById('joinStatus').innerText = "Bağlandı! Oyun açılıyor...";
+                setupConnection(); 
+            });
+            
+            // Bağlantı zaman aşımı kontrolü
+            setTimeout(() => {
+                if(!conn || !conn.open) {
+                    document.getElementById('joinStatus').innerText = "Bağlanılamadı. Kodu kontrol et veya tekrar dene.";
+                }
+            }, 8000);
         });
+
         peer.on('error', (err) => { document.getElementById('joinStatus').innerText = "Hata: " + err.type; });
     }
 
@@ -385,10 +385,8 @@
     }
     
     function startGameUI(msg) {
-        // Menü ve Başlığı gizle
         document.getElementById('mainContent').style.display = 'none';
         
-        // Oyun Container'ı GÖSTER (Fixed)
         const container = document.getElementById('gameContainer');
         container.style.display = 'flex';
         
