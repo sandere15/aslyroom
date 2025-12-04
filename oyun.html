@@ -78,7 +78,7 @@
     </style>
 </head>
 <body>
-    <div id="rotateMsg"><div style="font-size:3rem; color:var(--p1-color);">↻</div><p style="color:white; margin-top:10px;">LÜTFEN TELEFONU YAN ÇEVİR</p></div>
+    <div id="rotateMsg"><div style="font-size:3rem; color:var(--p1-color);">↻</div><p style="color:white; margin-top:10px;">LÜTFEN TELEFONU YAN ÇEVİR GÜZELİM</p></div>
 
     <div id="menuContainer">
         <h1>Couple Pong</h1>
@@ -282,10 +282,11 @@
     }
 
     function spawnPart(x,y,c) { for(let i=0;i<12;i++) particles.push({x:x,y:y,vx:(Math.random()-0.5)*8,vy:(Math.random()-0.5)*8,l:1,c:c,r:Math.random()*3+1}); }
-    function sendHeart() { spawnText("❤️ AŞK",true); if(conn&&conn.open) conn.send({t:'EMOJI', msg:"❤️ AŞK"}); }
+    function sendHeart() { spawnText("❤️ SENİSEVİYORUM",true); if(conn&&conn.open) conn.send({t:'EMOJI', msg:"❤️ AŞK"}); }
     function spawnText(m,mine) { texts.push({x:mine?(role==='host'?150:650):(role==='host'?650:150), y:state.by, msg:m, l:1.5}); }
     function finishGame() { let w=state.s1>state.s2?'P1':(state.s2>state.s1?'P2':'DRAW'); if(conn&&conn.open) conn.send({t:'OVER', w:w}); endGame(w); }
     function endGame(w) { state.over=true; clearInterval(timerId); document.getElementById('modalOverlay').style.display='flex'; document.getElementById('winName').innerText=(w==='P1'?(role==='guest'?oppName:myName):(role==='guest'?myName:oppName)); }
 </script>
 </body>
 </html>
+
