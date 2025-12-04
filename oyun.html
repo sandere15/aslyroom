@@ -4,30 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Pong - Neon Atmosphere</title>
+    <title>Pong - Final Name Fix</title>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { 
-            --p1-color: #F1C40F; /* Sarı */
-            --p2-color: #E74C3C; /* Kırmızı */
+            --p1-color: #F1C40F; 
+            --p2-color: #E74C3C; 
             --glow-red: rgba(220, 20, 60, 0.8); 
         }
         
         * { box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
 
         body {
-            /* DÜZELTME BURADA: Düz siyah yerine bordo-siyah geçişi */
             background: radial-gradient(circle at center, #2b1010 0%, #000000 100%);
             color: #fff; font-family: 'Montserrat', sans-serif;
             margin: 0; height: 100vh; overflow: hidden;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
 
-        /* --- MENÜ --- */
         #menuContainer {
             width: 90%; max-width: 400px;
-            background: rgba(20, 10, 10, 0.6); /* Hafif kızıl cam efekti */
+            background: rgba(20, 10, 10, 0.6);
             border: 1px solid rgba(255,255,255,0.1);
             border-radius: 16px;
             padding: 40px 20px;
@@ -37,90 +35,39 @@
             z-index: 50;
         }
 
-        h1 {
-            margin: 0 0 30px 0;
-            color: #fff;
-            font-weight: 900; letter-spacing: 2px; text-transform: uppercase;
-            text-shadow: 0 0 20px var(--p2-color); /* Başlıkta hafif kırmızı parlama */
-        }
-
-        input {
-            width: 100%; padding: 15px; margin-bottom: 20px;
-            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.1);
-            color: #fff; font-size: 1.1rem; text-align: center; font-weight: bold;
-            outline: none; border-radius: 8px;
-        }
-
-        button {
-            width: 100%; padding: 15px; margin-bottom: 15px;
-            background: var(--p1-color); color: #000; border: none; border-radius: 8px;
-            font-size: 1rem; font-weight: 900; cursor: pointer;
-            box-shadow: 0 0 15px rgba(241, 196, 15, 0.3);
-            transition: 0.2s;
-        }
+        h1 { margin: 0 0 30px 0; color: #fff; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; text-shadow: 0 0 20px var(--p2-color); }
+        input { width: 100%; padding: 15px; margin-bottom: 20px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.1); color: #fff; font-size: 1.1rem; text-align: center; font-weight: bold; outline: none; border-radius: 8px; }
+        
+        button { width: 100%; padding: 15px; margin-bottom: 15px; background: var(--p1-color); color: #000; border: none; border-radius: 8px; font-size: 1rem; font-weight: 900; cursor: pointer; box-shadow: 0 0 15px rgba(241, 196, 15, 0.3); transition: 0.2s; }
         button:active { transform: scale(0.96); }
         button.secondary { background: transparent; border: 2px solid #555; color: #ccc; box-shadow: none; }
         
-        /* --- OYUN ALANI --- */
-        #gameLayer {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            /* Arka planı transparan yap ki body'deki gradient görünsün */
-            background: transparent; 
-            z-index: 100;
-            display: none; 
-            align-items: center; justify-content: center;
-        }
-
+        #gameLayer { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: transparent; z-index: 100; display: none; align-items: center; justify-content: center; }
+        
         canvas {
             max-width: 95%; max-height: 95%;
-            /* Canvas içi çok hafif transparan siyah */
             background: rgba(0, 0, 0, 0.6); 
-            /* İSTEDİĞİN GLOW BURADA */
             box-shadow: 0 0 50px var(--glow-red), 0 0 10px var(--glow-red) inset; 
-            border: 1px solid rgba(220, 20, 60, 0.4);
-            border-radius: 8px;
+            border: 1px solid rgba(220, 20, 60, 0.4); border-radius: 8px;
         }
 
-        /* --- HUD --- */
-        #hudLayer {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 101; display: none;
-        }
+        #hudLayer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 101; display: none; }
+        
+        #timer { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); font-size: 2.5rem; font-weight: 900; color: #fff; text-shadow: 0 0 15px rgba(255,255,255,0.3); }
 
-        #timer {
-            position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
-            font-size: 2.5rem; font-weight: 900; color: #fff;
-            text-shadow: 0 0 15px rgba(255,255,255,0.3);
-        }
-
-        .p-name-box {
-            position: absolute; top: 25px;
-            font-weight: 700; font-size: 1.2rem; text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+        .p-name-box { position: absolute; top: 25px; font-weight: 700; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 1px; }
         #lblP1 { left: 40px; color: var(--p1-color); text-shadow: 0 0 15px rgba(241, 196, 15, 0.6); }
         #lblP2 { right: 40px; color: var(--p2-color); text-shadow: 0 0 15px rgba(231, 76, 60, 0.6); }
 
         #emojiBtn {
-            position: absolute; bottom: 30px; right: 30px;
-            width: 65px; height: 65px; 
-            background: rgba(231, 76, 60, 0.15);
-            border: 2px solid var(--p2-color); 
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.8rem; pointer-events: auto; cursor: pointer;
-            box-shadow: 0 0 25px rgba(231, 76, 60, 0.3);
-            transition: transform 0.1s;
+            position: absolute; bottom: 30px; right: 30px; width: 65px; height: 65px; 
+            background: rgba(231, 76, 60, 0.15); border: 2px solid var(--p2-color); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-size: 1.8rem; pointer-events: auto; cursor: pointer;
+            box-shadow: 0 0 25px rgba(231, 76, 60, 0.3); transition: transform 0.1s;
         }
         #emojiBtn:active { transform: scale(0.9); }
 
-        /* --- MODAL --- */
-        #modalOverlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); z-index: 200;
-            display: none; flex-direction: column; align-items: center; justify-content: center;
-            backdrop-filter: blur(5px);
-        }
+        #modalOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 200; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
         
         .hidden { display: none !important; }
         .text-big { font-size: 3rem; margin: 10px 0; font-weight: 900; letter-spacing: 5px; color: var(--p1-color); }
@@ -131,27 +78,20 @@
     </style>
 </head>
 <body>
-
-    <div id="rotateMsg">
-        <div style="font-size:3rem; color:var(--p1-color);">↻</div>
-        <p style="color:white; margin-top:10px;">LÜTFEN TELEFONU YAN ÇEVİR</p>
-    </div>
+    <div id="rotateMsg"><div style="font-size:3rem; color:var(--p1-color);">↻</div><p style="color:white; margin-top:10px;">LÜTFEN TELEFONU YAN ÇEVİR</p></div>
 
     <div id="menuContainer">
-        <h1>NEON PONG</h1>
-        
+        <h1>Couple Pong</h1>
         <div id="pName">
             <input type="text" id="inpName" placeholder="ADINIZ (Max 8)" maxlength="8">
             <button onclick="goModeSelect()">DEVAM ET</button>
         </div>
-
         <div id="pMode" class="hidden">
             <button onclick="startSingle()">🤖 ANTRENMAN (CPU)</button>
             <button class="secondary" onclick="startHost()">🏠 ODA KUR</button>
             <button class="secondary" onclick="startJoin()">🔑 ODAYA GİR</button>
             <button class="secondary" style="border:none; color:#888;" onclick="location.reload()">GERİ</button>
         </div>
-
         <div id="pHost" class="hidden">
             <p style="color:#ccc;">BU KODU ARKADAŞINA VER:</p>
             <div id="displayCode" class="text-big">...</div>
@@ -159,7 +99,6 @@
             <button id="btnStartGame" class="hidden" style="background:#2ecc71; margin-top:15px; box-shadow:0 0 15px #2ecc71;" onclick="hostTriggerStart()">BAŞLAT ▶</button>
             <button class="secondary" style="margin-top:20px;" onclick="location.reload()">İPTAL</button>
         </div>
-
         <div id="pJoin" class="hidden">
             <p style="color:#ccc;">ODA KODUNU GİR:</p>
             <input type="number" id="inpCode" placeholder="1234" style="font-size:2rem; letter-spacing:5px;">
@@ -169,9 +108,7 @@
         </div>
     </div>
 
-    <div id="gameLayer">
-        <canvas id="cvs" width="800" height="500"></canvas>
-    </div>
+    <div id="gameLayer"><canvas id="cvs" width="800" height="500"></canvas></div>
 
     <div id="hudLayer">
         <div id="timer">00:00</div>
@@ -212,7 +149,7 @@
     }
     function requestFullScreen() { document.documentElement.requestFullscreen?.().catch(()=>{}); }
 
-    // --- GAME LOGIC ---
+    // --- HOST & JOIN ---
     function startSingle() { role='single'; oppName="CPU"; startGame(); }
     
     function startHost() {
@@ -220,9 +157,13 @@
         const code = Math.floor(Math.random()*9000)+1000;
         document.getElementById('displayCode').innerText = code;
         peer = new Peer("cpong-"+code, PEER_CONF);
-        peer.on('open', ()=>{ document.getElementById('hostStatus').innerText="Bekleniyor..."; });
+        peer.on('open', ()=>{ document.getElementById('hostStatus').innerText="Oda açıldı, bekleniyor..."; });
         peer.on('error', ()=>{ startHost(); });
-        peer.on('connection', c => { conn=c; document.getElementById('hostStatus').innerText="BAĞLANDI!"; setupConn(); });
+        peer.on('connection', c => { 
+            conn=c; 
+            document.getElementById('hostStatus').innerText="Bağlantı kuruluyor...";
+            setupConn(); 
+        });
     }
     function hostTriggerStart() { if(conn&&conn.open) { conn.send({t:'START'}); startGame(); } }
 
@@ -232,33 +173,62 @@
         peer = new Peer(null, PEER_CONF);
         peer.on('open', ()=>{
             conn = peer.connect("cpong-"+document.getElementById('inpCode').value);
-            conn.on('open', ()=>{ document.getElementById('joinStatus').innerText="Bağlandı!"; setupConn(); });
+            conn.on('open', ()=>{ 
+                document.getElementById('joinStatus').innerText="Bağlantı kuruluyor..."; 
+                setupConn(); 
+            });
             setTimeout(()=>{ if(!conn||!conn.open) document.getElementById('joinStatus').innerText="Bulunamadı."; },5000);
         });
     }
 
+    // --- KRİTİK DÜZELTME BURADA ---
     function setupConn() {
-        conn.send({t:'NAME', n:myName});
+        // 1. ÖNCE dinleyiciyi kur (Veri kaçırmamak için)
         conn.on('data', d => {
-            if(d.t==='NAME') { oppName=d.n; if(role==='host') { document.getElementById('hostStatus').innerText=oppName+" geldi!"; document.getElementById('btnStartGame').classList.remove('hidden'); } }
+            if(d.t==='NAME') { 
+                oppName = d.n; 
+                // İsim gelir gelmez güncelle, oyun başlamamış olsa bile
+                updateNameLabels();
+                
+                if(role==='host') { 
+                    document.getElementById('hostStatus').innerText=oppName+" bağlandı!"; 
+                    document.getElementById('btnStartGame').classList.remove('hidden'); 
+                }
+            }
             else if(d.t==='START') startGame();
             else if(d.t==='MOVE') { if(role==='host') state.p2=d.v; }
             else if(d.t==='SYNC'&&role==='guest') { state=d.s; state.time=d.tm; updateTime(); }
             else if(d.t==='EMOJI') spawnText(d.msg, false);
             else if(d.t==='OVER') endGame(d.w);
         });
+
+        // 2. SONRA biraz bekle ve ismini gönder (Karşı tarafın dinleyicisi hazır olsun diye)
+        setTimeout(() => {
+            if(conn && conn.open) {
+                conn.send({t:'NAME', n:myName});
+                console.log("İsim gönderildi:", myName);
+            }
+        }, 500); // 500ms gecikme eklendi
+    }
+    
+    // İsimleri ekrana basan yardımcı fonksiyon
+    function updateNameLabels() {
+        document.getElementById('lblP1').innerText = role==='guest'?oppName:myName;
+        document.getElementById('lblP2').innerText = role==='guest'?myName:oppName;
     }
 
     function startGame() {
         document.getElementById('menuContainer').style.display='none';
         document.getElementById('gameLayer').style.display='flex';
         document.getElementById('hudLayer').style.display='block';
-        document.getElementById('lblP1').innerText = role==='guest'?oppName:myName;
-        document.getElementById('lblP2').innerText = role==='guest'?myName:oppName;
+        
+        updateNameLabels(); // Oyun başlarken de emin olalım
+
         if(role!=='guest') timerId = setInterval(()=>{ state.time--; if(state.time<=0){state.over=true; finishGame();} },1000);
         requestAnimationFrame(loop);
     }
 
+    // --- GAME LOOP ---
     function loop() {
         if(state.over) return;
         if(role!=='guest') updatePhys();
@@ -284,39 +254,23 @@
     function resetBall() { state.bx=G.w/2; state.by=G.h/2; state.bvx=(Math.random()>0.5?5:-5); state.bvy=(Math.random()*6)-3; }
     function updateTime() { let m=Math.floor(state.time/60), s=Math.floor(state.time%60); document.getElementById('timer').innerText=`${m}:${s<10?'0':''}${s}`; }
 
-    // --- DRAW ---
     function draw() {
         ctx.clearRect(0,0,G.w,G.h);
-        
         // Background Text
         ctx.save(); ctx.font="900 180px 'Montserrat'"; ctx.textAlign="center"; ctx.textBaseline="middle";
         ctx.fillStyle="rgba(255,255,255,0.04)"; 
         ctx.fillText(state.s1, G.w*0.25, G.h/2); ctx.fillText(state.s2, G.w*0.75, G.h/2);
         ctx.restore();
-
-        // Middle Line
-        ctx.beginPath(); ctx.moveTo(G.w/2,0); ctx.lineTo(G.w/2,G.h); 
-        ctx.strokeStyle="rgba(255,255,255,0.05)"; ctx.lineWidth=2; ctx.stroke();
-
-        // Paddles
+        // Line & Paddles
+        ctx.beginPath(); ctx.moveTo(G.w/2,0); ctx.lineTo(G.w/2,G.h); ctx.strokeStyle="rgba(255,255,255,0.05)"; ctx.lineWidth=2; ctx.stroke();
         ctx.shadowBlur=15; 
         ctx.shadowColor="#F1C40F"; ctx.fillStyle="#F1C40F"; ctx.fillRect(10,state.p1,15,100);
         ctx.shadowColor="#E74C3C"; ctx.fillStyle="#E74C3C"; ctx.fillRect(G.w-25,state.p2,15,100);
-
-        // Ball
+        // Ball & Effects
         ctx.shadowColor="#fff"; ctx.fillStyle="#fff"; ctx.beginPath(); ctx.arc(state.bx,state.by,8,0,Math.PI*2); ctx.fill(); ctx.shadowBlur=0;
-
-        // Effects
-        particles.forEach((p,i)=>{ 
-            p.x+=p.vx; p.y+=p.vy; p.l-=0.04; ctx.globalAlpha=p.l; ctx.fillStyle=p.c; 
-            ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill(); 
-            if(p.l<=0) particles.splice(i,1); 
-        }); ctx.globalAlpha=1;
-
-        texts.forEach((t,i)=>{
-            t.y--; t.l-=0.01; ctx.globalAlpha=t.l; ctx.font="bold 24px Montserrat"; ctx.fillStyle="#fff"; ctx.textAlign="center"; 
-            ctx.fillText(t.msg,t.x,t.y); if(t.l<=0) texts.splice(i,1);
-        }); ctx.globalAlpha=1;
+        particles.forEach((p,i)=>{ p.x+=p.vx; p.y+=p.vy; p.l-=0.04; ctx.globalAlpha=p.l; ctx.fillStyle=p.c; ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill(); if(p.l<=0) particles.splice(i,1); }); 
+        texts.forEach((t,i)=>{ t.y--; t.l-=0.01; ctx.globalAlpha=t.l; ctx.font="bold 24px Montserrat"; ctx.fillStyle="#fff"; ctx.textAlign="center"; ctx.fillText(t.msg,t.x,t.y); if(t.l<=0) texts.splice(i,1); }); 
+        ctx.globalAlpha=1;
     }
 
     // --- INPUT ---
