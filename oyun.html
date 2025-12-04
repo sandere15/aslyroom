@@ -4,154 +4,164 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Pong - Final Fix</title>
+    <title>Pong - Neon Atmosphere</title>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #121212; --gold: #D4AF37; --bordo: #9B1B30; --glass: rgba(255,255,255,0.1); }
+        :root { 
+            --p1-color: #F1C40F; /* Sarı */
+            --p2-color: #E74C3C; /* Kırmızı */
+            --glow-red: rgba(220, 20, 60, 0.8); 
+        }
         
         * { box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
 
         body {
-            background: radial-gradient(circle at center, #2b1a1a 0%, #0a0505 100%);
+            /* DÜZELTME BURADA: Düz siyah yerine bordo-siyah geçişi */
+            background: radial-gradient(circle at center, #2b1010 0%, #000000 100%);
             color: #fff; font-family: 'Montserrat', sans-serif;
             margin: 0; height: 100vh; overflow: hidden;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
 
-        /* --- MENÜ TASARIMI --- */
+        /* --- MENÜ --- */
         #menuContainer {
             width: 90%; max-width: 400px;
-            background: var(--glass);
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 12px;
-            padding: 30px 20px;
+            background: rgba(20, 10, 10, 0.6); /* Hafif kızıl cam efekti */
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 40px 20px;
             text-align: center;
             backdrop-filter: blur(15px);
             box-shadow: 0 20px 50px rgba(0,0,0,0.5);
             z-index: 50;
-            transition: opacity 0.5s;
         }
 
         h1 {
-            margin: 0 0 20px 0;
-            background: linear-gradient(to right, var(--gold), var(--bordo));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin: 0 0 30px 0;
+            color: #fff;
             font-weight: 900; letter-spacing: 2px; text-transform: uppercase;
+            text-shadow: 0 0 20px var(--p2-color); /* Başlıkta hafif kırmızı parlama */
         }
 
         input {
-            width: 100%; padding: 15px; margin-bottom: 15px;
-            background: rgba(0,0,0,0.3); border: none; border-bottom: 2px solid var(--gold);
+            width: 100%; padding: 15px; margin-bottom: 20px;
+            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.1);
             color: #fff; font-size: 1.1rem; text-align: center; font-weight: bold;
-            outline: none; border-radius: 4px;
+            outline: none; border-radius: 8px;
         }
 
         button {
-            width: 100%; padding: 15px; margin-bottom: 10px;
-            background: var(--gold); color: #000; border: none; border-radius: 8px;
+            width: 100%; padding: 15px; margin-bottom: 15px;
+            background: var(--p1-color); color: #000; border: none; border-radius: 8px;
             font-size: 1rem; font-weight: 900; cursor: pointer;
-            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
-            transition: transform 0.1s;
+            box-shadow: 0 0 15px rgba(241, 196, 15, 0.3);
+            transition: 0.2s;
         }
         button:active { transform: scale(0.96); }
-        button.secondary { background: transparent; border: 2px solid var(--gold); color: var(--gold); }
-        button.start-game { background: #28a745; color: white; box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3); animation: pulseBtn 1s infinite; }
-
-        @keyframes pulseBtn { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-
-        /* --- OYUN ALANI (CANVAS) --- */
+        button.secondary { background: transparent; border: 2px solid #555; color: #ccc; box-shadow: none; }
+        
+        /* --- OYUN ALANI --- */
         #gameLayer {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: #000; z-index: 100;
-            display: none; /* JS ile flex yapılacak */
+            /* Arka planı transparan yap ki body'deki gradient görünsün */
+            background: transparent; 
+            z-index: 100;
+            display: none; 
             align-items: center; justify-content: center;
         }
 
         canvas {
-            max-width: 100%; max-height: 100%;
-            background: rgba(20,10,10,0.9);
-            box-shadow: 0 0 30px var(--bordo);
+            max-width: 95%; max-height: 95%;
+            /* Canvas içi çok hafif transparan siyah */
+            background: rgba(0, 0, 0, 0.6); 
+            /* İSTEDİĞİN GLOW BURADA */
+            box-shadow: 0 0 50px var(--glow-red), 0 0 10px var(--glow-red) inset; 
+            border: 1px solid rgba(220, 20, 60, 0.4);
+            border-radius: 8px;
         }
 
-        /* --- OYUN ARAYÜZÜ (HUD) --- */
+        /* --- HUD --- */
         #hudLayer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none; z-index: 101; display: none;
         }
 
         #timer {
-            position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
-            font-size: 2.5rem; font-weight: 900; color: rgba(255,255,255,0.8);
+            position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
+            font-size: 2.5rem; font-weight: 900; color: #fff;
+            text-shadow: 0 0 15px rgba(255,255,255,0.3);
         }
 
-        .p-names {
-            position: absolute; top: 20px; width: 90%; left: 5%;
-            display: flex; justify-content: space-between;
+        .p-name-box {
+            position: absolute; top: 25px;
             font-weight: 700; font-size: 1.2rem; text-transform: uppercase;
+            letter-spacing: 1px;
         }
+        #lblP1 { left: 40px; color: var(--p1-color); text-shadow: 0 0 15px rgba(241, 196, 15, 0.6); }
+        #lblP2 { right: 40px; color: var(--p2-color); text-shadow: 0 0 15px rgba(231, 76, 60, 0.6); }
 
         #emojiBtn {
             position: absolute; bottom: 30px; right: 30px;
-            width: 70px; height: 70px; background: rgba(155,27,48,0.3);
-            border: 2px solid var(--bordo); border-radius: 50%;
+            width: 65px; height: 65px; 
+            background: rgba(231, 76, 60, 0.15);
+            border: 2px solid var(--p2-color); 
+            border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            font-size: 2rem; pointer-events: auto; cursor: pointer;
+            font-size: 1.8rem; pointer-events: auto; cursor: pointer;
+            box-shadow: 0 0 25px rgba(231, 76, 60, 0.3);
+            transition: transform 0.1s;
         }
+        #emojiBtn:active { transform: scale(0.9); }
 
-        /* --- MODAL (KAZANAN/HATA) --- */
+        /* --- MODAL --- */
         #modalOverlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95); z-index: 200;
+            background: rgba(0,0,0,0.85); z-index: 200;
             display: none; flex-direction: column; align-items: center; justify-content: center;
+            backdrop-filter: blur(5px);
         }
         
-        /* Utility */
         .hidden { display: none !important; }
-        .text-gold { color: var(--gold); }
-        .text-big { font-size: 3rem; margin: 10px 0; font-weight: 900; letter-spacing: 5px; }
-        .status { margin-top: 10px; font-size: 0.8rem; color: #ccc; min-height: 20px; }
+        .text-big { font-size: 3rem; margin: 10px 0; font-weight: 900; letter-spacing: 5px; color: var(--p1-color); }
+        .status { margin-top: 10px; font-size: 0.8rem; color: #bbb; }
         
-        /* Landscape Uyarısı */
         #rotateMsg { display: none; position: fixed; z-index: 9999; background: #000; width: 100%; height: 100%; top:0; left:0; align-items: center; justify-content: center; flex-direction: column;}
         @media screen and (orientation: portrait) { #rotateMsg { display: flex; } }
-
     </style>
 </head>
 <body>
 
     <div id="rotateMsg">
-        <div style="font-size:3rem; color:var(--gold);">↻</div>
+        <div style="font-size:3rem; color:var(--p1-color);">↻</div>
         <p style="color:white; margin-top:10px;">LÜTFEN TELEFONU YAN ÇEVİR</p>
     </div>
 
     <div id="menuContainer">
-        <h1>Couple Pong</h1>
+        <h1>NEON PONG</h1>
         
         <div id="pName">
-            <input type="text" id="inpName" placeholder="İSMİNİZ (Max 8)" maxlength="8">
+            <input type="text" id="inpName" placeholder="ADINIZ (Max 8)" maxlength="8">
             <button onclick="goModeSelect()">DEVAM ET</button>
         </div>
 
         <div id="pMode" class="hidden">
-            <button onclick="startSingle()">🤖 ANTRENMAN</button>
-            <button class="secondary" onclick="startHost()">🏠 ODA KUR (HOST)</button>
-            <button class="secondary" onclick="startJoin()">🔑 ODAYA KATIL</button>
-            <button class="secondary" style="margin-top:20px; font-size:0.8rem; border:none;" onclick="location.reload()">GERİ</button>
+            <button onclick="startSingle()">🤖 ANTRENMAN (CPU)</button>
+            <button class="secondary" onclick="startHost()">🏠 ODA KUR</button>
+            <button class="secondary" onclick="startJoin()">🔑 ODAYA GİR</button>
+            <button class="secondary" style="border:none; color:#888;" onclick="location.reload()">GERİ</button>
         </div>
 
         <div id="pHost" class="hidden">
-            <p>BU KODU ONA SÖYLE:</p>
-            <div id="displayCode" class="text-big text-gold">...</div>
-            <div id="hostStatus" class="status">Sunucu başlatılıyor...</div>
-            
-            <button id="btnStartGame" class="start-game hidden" onclick="hostTriggerStart()">OYUNU BAŞLAT ▶</button>
-            
+            <p style="color:#ccc;">BU KODU ARKADAŞINA VER:</p>
+            <div id="displayCode" class="text-big">...</div>
+            <div id="hostStatus" class="status">Sunucu bekleniyor...</div>
+            <button id="btnStartGame" class="hidden" style="background:#2ecc71; margin-top:15px; box-shadow:0 0 15px #2ecc71;" onclick="hostTriggerStart()">BAŞLAT ▶</button>
             <button class="secondary" style="margin-top:20px;" onclick="location.reload()">İPTAL</button>
         </div>
 
         <div id="pJoin" class="hidden">
-            <p>4 HANELİ KODU GİR:</p>
+            <p style="color:#ccc;">ODA KODUNU GİR:</p>
             <input type="number" id="inpCode" placeholder="1234" style="font-size:2rem; letter-spacing:5px;">
             <button onclick="joinSession()">BAĞLAN</button>
             <div id="joinStatus" class="status"></div>
@@ -165,342 +175,163 @@
 
     <div id="hudLayer">
         <div id="timer">00:00</div>
-        <div class="p-names">
-            <span id="lblP1" style="color:var(--gold)">P1</span>
-            <span id="lblP2" style="color:var(--bordo)">P2</span>
-        </div>
+        <div id="lblP1" class="p-name-box">P1</div>
+        <div id="lblP2" class="p-name-box">P2</div>
         <div id="emojiBtn" onclick="sendHeart()">❤️</div>
     </div>
 
     <div id="modalOverlay">
-        <div style="font-size:80px; color:var(--gold);">♛</div>
-        <p style="color:#aaa; letter-spacing:2px;">KAZANAN</p>
+        <div style="font-size:80px; color:var(--p1-color);">♛</div>
+        <p style="color:#aaa; letter-spacing:2px; margin:0;">KAZANAN</p>
         <h2 id="winName" style="font-size:3rem; margin:10px 0; color:#fff;">-</h2>
-        <button style="width:200px;" onclick="location.reload()">TEKRAR OYNA</button>
+        <button style="width:200px;" onclick="location.reload()">TEKRAR</button>
     </div>
 
 <script>
-    // --- AYARLAR ---
     const PEER_CONF = { config: { iceServers: [ { urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:global.stun.twilio.com:3478' } ] } };
     const G = { w: 800, h: 500 };
     
-    // --- DURUM DEĞİŞKENLERİ ---
-    let state = {
-        bx: 400, by: 250, bvx: 5, bvy: 5,
-        p1: 200, p2: 200, s1: 0, s2: 0,
-        time: 90, over: false
-    };
-    let role = null; // 'host', 'guest', 'single'
-    let myName = "OYUNCU";
-    let oppName = "RAKİP";
-    let peer = null;
-    let conn = null;
-    let loopId = null;
-    let timerId = null;
-    let particles = [];
-    let texts = [];
+    let state = { bx: 400, by: 250, bvx: 5, bvy: 5, p1: 200, p2: 200, s1: 0, s2: 0, time: 90, over: false };
+    let role = null; let myName = "OYUNCU"; let oppName = "RAKİP";
+    let peer = null; let conn = null; let timerId = null;
+    let particles = []; let texts = [];
 
-    // --- DOM ELEMANLARI ---
     const cvs = document.getElementById('cvs');
     const ctx = cvs.getContext('2d');
 
-    // --- GİRİŞ MANTIĞI ---
+    // --- MENÜ ---
     function goModeSelect() {
         const val = document.getElementById('inpName').value.trim();
         if(val) myName = val.toUpperCase();
         showPage('pMode');
         requestFullScreen();
     }
-
     function showPage(id) {
         ['pName','pMode','pHost','pJoin'].forEach(p => document.getElementById(p).classList.add('hidden'));
         document.getElementById(id).classList.remove('hidden');
     }
+    function requestFullScreen() { document.documentElement.requestFullscreen?.().catch(()=>{}); }
 
-    function requestFullScreen() {
-        document.documentElement.requestFullscreen?.().catch(()=>{});
-    }
-
-    // --- SINGLE PLAYER ---
-    function startSingle() {
-        role = 'single'; oppName = "CPU";
-        startGame();
-    }
-
-    // --- HOST LOGIC ---
+    // --- GAME LOGIC ---
+    function startSingle() { role='single'; oppName="CPU"; startGame(); }
+    
     function startHost() {
-        role = 'host';
-        showPage('pHost');
+        role='host'; showPage('pHost');
         const code = Math.floor(Math.random()*9000)+1000;
-        const id = "cpong-" + code;
-        
         document.getElementById('displayCode').innerText = code;
-        
-        peer = new Peer(id, PEER_CONF);
-        peer.on('open', () => { document.getElementById('hostStatus').innerText = "Oda açıldı, oyuncu bekleniyor..."; });
-        peer.on('error', e => { 
-            if(e.type==='unavailable-id') startHost(); // Kod çakışırsa yeniden dene
-            else document.getElementById('hostStatus').innerText = "Hata: " + e.type; 
-        });
-
-        peer.on('connection', c => {
-            conn = c;
-            document.getElementById('hostStatus').innerText = "BAĞLANDI! Başlat'a bas.";
-            setupConnection();
-        });
+        peer = new Peer("cpong-"+code, PEER_CONF);
+        peer.on('open', ()=>{ document.getElementById('hostStatus').innerText="Bekleniyor..."; });
+        peer.on('error', ()=>{ startHost(); });
+        peer.on('connection', c => { conn=c; document.getElementById('hostStatus').innerText="BAĞLANDI!"; setupConn(); });
     }
+    function hostTriggerStart() { if(conn&&conn.open) { conn.send({t:'START'}); startGame(); } }
 
-    function hostTriggerStart() {
-        if(conn && conn.open) {
-            conn.send({ t: 'START_CMD' }); // Misafire başlat emri
-            startGame(); // Kendin başlat
-        }
-    }
-
-    // --- JOIN LOGIC ---
     function startJoin() { showPage('pJoin'); }
-
     function joinSession() {
-        const code = document.getElementById('inpCode').value;
-        if(code.length !== 4) return;
-        
-        role = 'guest';
-        document.getElementById('joinStatus').innerText = "Sunucu aranıyor...";
-        
+        role='guest'; document.getElementById('joinStatus').innerText="Aranıyor...";
         peer = new Peer(null, PEER_CONF);
-        peer.on('open', () => {
-            conn = peer.connect("cpong-" + code);
-            
-            conn.on('open', () => {
-                document.getElementById('joinStatus').innerText = "Bağlandı! Host'un başlatması bekleniyor...";
-                setupConnection();
-            });
-            
-            setTimeout(() => {
-                if(!conn || !conn.open) document.getElementById('joinStatus').innerText = "Oda bulunamadı.";
-            }, 5000);
+        peer.on('open', ()=>{
+            conn = peer.connect("cpong-"+document.getElementById('inpCode').value);
+            conn.on('open', ()=>{ document.getElementById('joinStatus').innerText="Bağlandı!"; setupConn(); });
+            setTimeout(()=>{ if(!conn||!conn.open) document.getElementById('joinStatus').innerText="Bulunamadı."; },5000);
         });
     }
 
-    // --- ORTAK BAĞLANTI AYARLARI ---
-    function setupConnection() {
-        // İsim değiş tokuşu
-        conn.send({ t: 'NAME', n: myName });
-        
+    function setupConn() {
+        conn.send({t:'NAME', n:myName});
         conn.on('data', d => {
-            if(d.t === 'NAME') {
-                oppName = d.n;
-                if(role === 'host') {
-                    // İsim geldi, Host'a başlat butonunu göster
-                    document.getElementById('hostStatus').innerText = oppName + " bağlandı!";
-                    document.getElementById('btnStartGame').classList.remove('hidden');
-                }
-            }
-            else if(d.t === 'START_CMD') { startGame(); } // Host başlattı
-            else if(d.t === 'MOVE') { 
-                if(role === 'host') state.p2 = d.v; 
-            }
-            else if(d.t === 'SYNC') { // Host'tan gelen oyun verisi
-                if(role === 'guest') {
-                    state = d.s;
-                    state.time = d.tm; // Zamanı eşitle
-                    updateTimeDisplay();
-                }
-            }
-            else if(d.t === 'EMOJI') { spawnText(d.msg, false); }
-            else if(d.t === 'OVER') { endGame(d.w); }
+            if(d.t==='NAME') { oppName=d.n; if(role==='host') { document.getElementById('hostStatus').innerText=oppName+" geldi!"; document.getElementById('btnStartGame').classList.remove('hidden'); } }
+            else if(d.t==='START') startGame();
+            else if(d.t==='MOVE') { if(role==='host') state.p2=d.v; }
+            else if(d.t==='SYNC'&&role==='guest') { state=d.s; state.time=d.tm; updateTime(); }
+            else if(d.t==='EMOJI') spawnText(d.msg, false);
+            else if(d.t==='OVER') endGame(d.w);
         });
     }
 
-    // --- OYUN BAŞLATMA (KRİTİK BÖLÜM) ---
     function startGame() {
-        // 1. Menüyü yok et
-        document.getElementById('menuContainer').style.display = 'none';
-        
-        // 2. Oyun katmanlarını aç
-        const gl = document.getElementById('gameLayer');
-        const hl = document.getElementById('hudLayer');
-        gl.style.display = 'flex';
-        hl.style.display = 'block';
-
-        // 3. İsimleri yaz
-        document.getElementById('lblP1').innerText = role==='guest' ? oppName : myName;
-        document.getElementById('lblP2').innerText = role==='guest' ? myName : oppName;
-
-        // 4. Döngüleri Başlat
-        if(role === 'host' || role === 'single') {
-            timerId = setInterval(() => {
-                state.time--;
-                if(state.time <= 0) {
-                    state.over = true;
-                    finishGame();
-                }
-            }, 1000);
-        }
-        
+        document.getElementById('menuContainer').style.display='none';
+        document.getElementById('gameLayer').style.display='flex';
+        document.getElementById('hudLayer').style.display='block';
+        document.getElementById('lblP1').innerText = role==='guest'?oppName:myName;
+        document.getElementById('lblP2').innerText = role==='guest'?myName:oppName;
+        if(role!=='guest') timerId = setInterval(()=>{ state.time--; if(state.time<=0){state.over=true; finishGame();} },1000);
         requestAnimationFrame(loop);
     }
 
-    // --- OYUN DÖNGÜSÜ ---
     function loop() {
         if(state.over) return;
-        
-        if(role === 'host' || role === 'single') updatePhysics();
+        if(role!=='guest') updatePhys();
         draw();
-        
-        if(role === 'host' && conn && conn.open) {
-            // Misafire tüm durumu gönder (Top, skorlar, zaman)
-            conn.send({ t: 'SYNC', s: state, tm: state.time });
-        }
-        
+        if(role==='host'&&conn&&conn.open) conn.send({t:'SYNC', s:state, tm:state.time});
         requestAnimationFrame(loop);
     }
 
-    function updatePhysics() {
-        state.bx += state.bvx; state.by += state.bvy;
-
-        // CPU
-        if(role === 'single') {
-            let center = state.p2 + 50;
-            if(center < state.by - 30) state.p2 += 6;
-            else if(center > state.by + 30) state.p2 -= 6;
-        }
-
-        // Duvarlar
-        if(state.by < 0 || state.by > G.h) state.bvy *= -1;
-
-        // Raket Çarpışma
-        // P1
-        if(state.bx < 25 && state.by > state.p1 && state.by < state.p1 + 100) {
-            state.bvx = Math.abs(state.bvx) * 1.05;
-            spawnPart(state.bx, state.by, '#D4AF37');
-        }
-        else if(state.bx < 0) { state.s2++; resetBall(); }
-
-        // P2
-        if(state.bx > G.w - 25 && state.by > state.p2 && state.by < state.p2 + 100) {
-            state.bvx = -Math.abs(state.bvx) * 1.05;
-            spawnPart(state.bx, state.by, '#9B1B30');
-        }
-        else if(state.bx > G.w) { state.s1++; resetBall(); }
-
-        // Sınırla
-        state.p1 = Math.max(0, Math.min(400, state.p1));
-        state.p2 = Math.max(0, Math.min(400, state.p2));
+    function updatePhys() {
+        state.bx+=state.bvx; state.by+=state.bvy;
+        if(role==='single') { let c=state.p2+50; if(c<state.by-20) state.p2+=6; else if(c>state.by+20) state.p2-=6; }
+        if(state.by<8||state.by>G.h-8) state.bvy*=-1;
         
-        updateTimeDisplay();
+        if(state.bx<30 && state.by>state.p1 && state.by<state.p1+100) { state.bvx=Math.abs(state.bvx)*1.05; spawnPart(state.bx,state.by,'#F1C40F'); }
+        else if(state.bx<0) { state.s2++; resetBall(); }
+        
+        if(state.bx>G.w-30 && state.by>state.p2 && state.by<state.p2+100) { state.bvx=-Math.abs(state.bvx)*1.05; spawnPart(state.bx,state.by,'#E74C3C'); }
+        else if(state.bx>G.w) { state.s1++; resetBall(); }
+        
+        state.p1=Math.max(0,Math.min(400,state.p1)); state.p2=Math.max(0,Math.min(400,state.p2));
+        updateTime();
     }
+    function resetBall() { state.bx=G.w/2; state.by=G.h/2; state.bvx=(Math.random()>0.5?5:-5); state.bvy=(Math.random()*6)-3; }
+    function updateTime() { let m=Math.floor(state.time/60), s=Math.floor(state.time%60); document.getElementById('timer').innerText=`${m}:${s<10?'0':''}${s}`; }
 
-    function resetBall() {
-        state.bx = G.w/2; state.by = G.h/2;
-        state.bvx = (Math.random()>0.5 ? 5 : -5);
-        state.bvy = (Math.random()*6)-3;
-    }
-
-    // --- ÇİZİM ---
+    // --- DRAW ---
     function draw() {
-        // Temizle
-        ctx.fillStyle = '#000'; ctx.fillRect(0,0,G.w,G.h);
+        ctx.clearRect(0,0,G.w,G.h);
         
-        // Raketler
-        ctx.shadowBlur = 20;
-        ctx.fillStyle = '#D4AF37'; 
-        ctx.shadowColor = '#D4AF37';
-        ctx.fillRect(10, state.p1, 15, 100); // P1
+        // Background Text
+        ctx.save(); ctx.font="900 180px 'Montserrat'"; ctx.textAlign="center"; ctx.textBaseline="middle";
+        ctx.fillStyle="rgba(255,255,255,0.04)"; 
+        ctx.fillText(state.s1, G.w*0.25, G.h/2); ctx.fillText(state.s2, G.w*0.75, G.h/2);
+        ctx.restore();
 
-        ctx.fillStyle = '#9B1B30'; 
-        ctx.shadowColor = '#9B1B30';
-        ctx.fillRect(G.w-25, state.p2, 15, 100); // P2
+        // Middle Line
+        ctx.beginPath(); ctx.moveTo(G.w/2,0); ctx.lineTo(G.w/2,G.h); 
+        ctx.strokeStyle="rgba(255,255,255,0.05)"; ctx.lineWidth=2; ctx.stroke();
 
-        // Top
-        ctx.fillStyle = '#fff';
-        ctx.shadowColor = '#fff';
-        ctx.beginPath(); ctx.arc(state.bx, state.by, 8, 0, Math.PI*2); ctx.fill();
-        ctx.shadowBlur = 0;
+        // Paddles
+        ctx.shadowBlur=15; 
+        ctx.shadowColor="#F1C40F"; ctx.fillStyle="#F1C40F"; ctx.fillRect(10,state.p1,15,100);
+        ctx.shadowColor="#E74C3C"; ctx.fillStyle="#E74C3C"; ctx.fillRect(G.w-25,state.p2,15,100);
 
-        // Efektler
-        particles.forEach((p,i) => {
-            p.x+=p.vx; p.y+=p.vy; p.l-=0.05;
-            ctx.globalAlpha = p.l; ctx.fillStyle=p.c; 
-            ctx.beginPath(); ctx.arc(p.x, p.y, 3, 0, Math.PI*2); ctx.fill();
-            if(p.l<=0) particles.splice(i,1);
-        });
-        ctx.globalAlpha=1;
+        // Ball
+        ctx.shadowColor="#fff"; ctx.fillStyle="#fff"; ctx.beginPath(); ctx.arc(state.bx,state.by,8,0,Math.PI*2); ctx.fill(); ctx.shadowBlur=0;
 
-        texts.forEach((t,i) => {
-            t.y--; t.l-=0.01;
-            ctx.globalAlpha=t.l; ctx.font="20px Arial"; ctx.fillStyle="#fff"; ctx.textAlign="center";
-            ctx.fillText(t.msg, t.x, t.y);
-            if(t.l<=0) texts.splice(i,1);
-        });
-        ctx.globalAlpha=1;
+        // Effects
+        particles.forEach((p,i)=>{ 
+            p.x+=p.vx; p.y+=p.vy; p.l-=0.04; ctx.globalAlpha=p.l; ctx.fillStyle=p.c; 
+            ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill(); 
+            if(p.l<=0) particles.splice(i,1); 
+        }); ctx.globalAlpha=1;
+
+        texts.forEach((t,i)=>{
+            t.y--; t.l-=0.01; ctx.globalAlpha=t.l; ctx.font="bold 24px Montserrat"; ctx.fillStyle="#fff"; ctx.textAlign="center"; 
+            ctx.fillText(t.msg,t.x,t.y); if(t.l<=0) texts.splice(i,1);
+        }); ctx.globalAlpha=1;
     }
 
-    // --- INPUT HANDLER ---
-    window.addEventListener('touchmove', e => {
-        if(document.getElementById('gameLayer').style.display === 'flex') {
-            e.preventDefault();
-            handleInput(e.touches[0].clientY);
-        }
-    }, {passive:false});
-
-    window.addEventListener('mousemove', e => {
-        if(document.getElementById('gameLayer').style.display === 'flex') {
-            handleInput(e.clientY);
-        }
-    });
-
-    function handleInput(y) {
-        // Ekran koordinatını Canvas koordinatına çevir (Oranla)
-        const rect = cvs.getBoundingClientRect();
-        const scaleY = G.h / rect.height;
-        const relativeY = (y - rect.top) * scaleY;
-        
-        const val = relativeY - 50; // Raket ortası
-
-        if(role === 'host' || role === 'single') state.p1 = val;
-        else if(conn && conn.open) conn.send({ t: 'MOVE', v: val });
+    // --- INPUT ---
+    window.addEventListener('touchmove',e=>{if(document.getElementById('gameLayer').style.display==='flex'){e.preventDefault(); handle(e.touches[0].clientY);}},{passive:false});
+    window.addEventListener('mousemove',e=>{if(document.getElementById('gameLayer').style.display==='flex') handle(e.clientY);});
+    function handle(y) {
+        let r=cvs.getBoundingClientRect(), sy=G.h/r.height, v=(y-r.top)*sy-50;
+        if(role!=='guest') state.p1=v; else if(conn&&conn.open) conn.send({t:'MOVE', v:v});
     }
 
-    // --- YARDIMCILAR ---
-    function updateTimeDisplay() {
-        let m = Math.floor(state.time/60);
-        let s = Math.floor(state.time%60);
-        document.getElementById('timer').innerText = `${m}:${s<10?'0':''}${s}`;
-    }
-
-    function spawnPart(x,y,c) {
-        for(let i=0;i<10;i++) particles.push({x:x, y:y, vx:(Math.random()-0.5)*10, vy:(Math.random()-0.5)*10, l:1, c:c});
-    }
-
-    function sendHeart() {
-        spawnText("❤️ SENİ SEVİYORUM", true);
-        if(conn && conn.open) conn.send({t:'EMOJI', msg:"❤️ SENİ SEVİYORUM"});
-    }
-
-    function spawnText(msg, isMine) {
-        let x = isMine ? (role==='host'?150:650) : (role==='host'?650:150);
-        texts.push({x:x, y:state.by, msg:msg, l:1.5});
-    }
-
-    function finishGame() {
-        let w = state.s1 > state.s2 ? 'P1' : (state.s2 > state.s1 ? 'P2' : 'DRAW');
-        if(conn && conn.open) conn.send({t:'OVER', w:w});
-        endGame(w);
-    }
-
-    function endGame(winnerCode) {
-        state.over = true;
-        clearInterval(timerId);
-        document.getElementById('modalOverlay').style.display = 'flex';
-        
-        let wName = "-";
-        if(winnerCode === 'P1') wName = (role==='host'||role==='single') ? myName : oppName;
-        else if(winnerCode === 'P2') wName = (role==='host'||role==='single') ? oppName : myName;
-        else wName = "DOSTLUK";
-        
-        document.getElementById('winName').innerText = wName;
-    }
+    function spawnPart(x,y,c) { for(let i=0;i<12;i++) particles.push({x:x,y:y,vx:(Math.random()-0.5)*8,vy:(Math.random()-0.5)*8,l:1,c:c,r:Math.random()*3+1}); }
+    function sendHeart() { spawnText("❤️ AŞK",true); if(conn&&conn.open) conn.send({t:'EMOJI', msg:"❤️ AŞK"}); }
+    function spawnText(m,mine) { texts.push({x:mine?(role==='host'?150:650):(role==='host'?650:150), y:state.by, msg:m, l:1.5}); }
+    function finishGame() { let w=state.s1>state.s2?'P1':(state.s2>state.s1?'P2':'DRAW'); if(conn&&conn.open) conn.send({t:'OVER', w:w}); endGame(w); }
+    function endGame(w) { state.over=true; clearInterval(timerId); document.getElementById('modalOverlay').style.display='flex'; document.getElementById('winName').innerText=(w==='P1'?(role==='guest'?oppName:myName):(role==='guest'?myName:oppName)); }
 </script>
 </body>
 </html>
